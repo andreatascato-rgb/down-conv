@@ -47,6 +47,6 @@ def get_resource_path(relative_path: str) -> Path:
 def get_app_icon_path() -> Path:
     """Path icona app (finestra e taskbar)."""
     if getattr(sys, "frozen", False):
-        # PyInstaller: --add-data "src/downconv/resources;downconv/resources"
+        # PyInstaller: Win ";", macOS/Linux ":" in --add-data
         return Path(sys._MEIPASS) / "downconv" / "resources" / "icon.png"
     return get_resource_path("resources") / "icon.png"

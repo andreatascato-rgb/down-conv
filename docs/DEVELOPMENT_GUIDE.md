@@ -32,6 +32,8 @@ pip install -r requirements.txt
 ffmpeg -version
 ```
 
+**macOS:** FFmpeg con Homebrew: `brew install ffmpeg`
+
 ### yt-dlp Nightly
 
 ```bash

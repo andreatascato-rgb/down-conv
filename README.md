@@ -11,11 +11,13 @@ Applicazione desktop professionale per **download video/audio da YouTube** e **c
 ## Download (utenti finali)
 
 1. Vai a [Releases](https://github.com/andreatascato-rgb/down-conv/releases)
-2. Scarica `DownConv-vX.X.X-win64.exe` (ultima versione)
+2. Scarica l'asset per il tuo sistema:
+   - **Windows:** `DownConv-vX.X.X-win64.exe`
+   - **macOS:** `DownConv-vX.X.X-macos.zip` (estrai e apri `DownConv.app`)
 3. [Installa FFmpeg](https://ffmpeg.org/download.html) e aggiungilo al PATH (richiesto per conversione)
-4. Avvia l'eseguibile — nessuna installazione Python necessaria
+4. Avvia l'app — nessuna installazione Python necessaria
 
-**Requisiti:** Windows 10+, FFmpeg in PATH
+**Requisiti:** Windows 10+ / macOS 11+ (Intel o Apple Silicon), FFmpeg in PATH
 
 ---
 
@@ -33,6 +35,7 @@ Applicazione desktop professionale per **download video/audio da YouTube** e **c
 ```bash
 python -m venv .venv
 .venv\Scripts\activate    # Windows
+# source .venv/bin/activate  # macOS/Linux
 pip install -r requirements.txt
 ```
 
@@ -40,7 +43,7 @@ pip install -r requirements.txt
 
 ```bash
 cd src && python -m downconv.main
-# O: .\scripts\run.ps1 (Windows)
+# O: .\scripts\run.ps1 (Windows)  |  ./scripts/run.sh (macOS/Linux)
 ```
 
 ### Documentazione

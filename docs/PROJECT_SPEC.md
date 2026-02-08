@@ -63,7 +63,7 @@ Applicazione desktop professionale per:
 ## 3. Requisiti Non Funzionali
 
 - **Performance:** UI sempre responsiva
-- **Compatibilità:** Windows 10+, Python 3.12+
+- **Compatibilità:** Windows 10+, macOS 11+ (Intel/Apple Silicon), Python 3.12+
 - **Packaging:** Distribuibile con PyInstaller/Nuitka
 - **Manutenibilità:** Codice modulare, DRY, documentato
 
