@@ -10,6 +10,12 @@ Tutti i cambiamenti notevoli sono documentati qui. Formato [Keep a Changelog](ht
 - Badge CI e License in README
 - Issue template (bug, feature) e PR template in .github/
 
+## [0.4.1] - 2026-02-08
+
+### Fixed
+- MP3→MP3 (o stesso formato) in stessa cartella: usava output=input, FFmpeg falliva. Ora temp file + rename atomico.
+- Batch bloccato su file problematico: aggiunto timeout 10 min per conversione, evita hang indefinito.
+
 ## [0.4.0] - 2026-02-08
 
 ### Added

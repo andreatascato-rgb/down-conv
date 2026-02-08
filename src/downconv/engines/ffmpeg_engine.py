@@ -1,14 +1,19 @@
 """Engine FFmpeg per conversione audio."""
 
 import logging
+import os
 import shutil
 import subprocess
+import tempfile
 import threading
 from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
+
+# Timeout per singola conversione (evita hang FFmpeg su file corrotti/problema)
+CONVERT_TIMEOUT_SEC = 600  # 10 min
 
 
 def check_ffmpeg_available() -> bool:
@@ -110,23 +115,55 @@ class FfmpegEngine:
             out_str = str(output_path)
         cmd.append(out_str)
 
+        # Stesso file input/output (es. MP3→MP3 stessa cartella): temp + rename atomico
+        final_output = output_path
+        if output_path.resolve() == input_path.resolve():
+            fd, tmp_path = tempfile.mkstemp(
+                suffix=output_path.suffix,
+                dir=output_path.parent,
+                prefix=f".{output_path.stem}_",
+            )
+            os.close(fd)
+            tmp_path = Path(tmp_path)
+            cmd[-1] = str(tmp_path)
+            output_path = tmp_path
+
         try:
             result = subprocess.run(
                 cmd,
                 capture_output=True,
                 text=True,
                 check=False,
+                timeout=CONVERT_TIMEOUT_SEC,
             )
             if result.returncode != 0:
+                if output_path != final_output and output_path.exists():
+                    output_path.unlink(missing_ok=True)
                 msg = _parse_ffmpeg_error(result.stderr)
                 return False, msg
+            if output_path != final_output:
+                os.replace(output_path, final_output)
             return True, ""
+        except subprocess.TimeoutExpired:
+            if output_path != final_output and output_path.exists():
+                output_path.unlink(missing_ok=True)
+            logger.warning(
+                "Timeout conversione %s (oltre %ds)", input_path.name, CONVERT_TIMEOUT_SEC
+            )
+            mins = CONVERT_TIMEOUT_SEC // 60
+            return False, f"Timeout: file troppo lungo o problematico (oltre {mins} min)"
         except FileNotFoundError:
+            if output_path != final_output and output_path.exists():
+                output_path.unlink(missing_ok=True)
             return False, "FFmpeg non trovato. Installalo e aggiungilo al PATH."
         except subprocess.CalledProcessError as e:
+            if output_path != final_output and output_path.exists():
+                output_path.unlink(missing_ok=True)
             msg = _parse_ffmpeg_error(e.stderr if hasattr(e, "stderr") else "")
             return False, msg or str(e)
         except Exception as e:
+            if output_path != final_output and output_path.exists():
+                output_path.unlink(missing_ok=True)
             logger.exception("Conversione fallita: %s", e)
             return False, str(e)
 
