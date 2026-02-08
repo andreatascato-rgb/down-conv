@@ -5,9 +5,9 @@ import subprocess
 import sys
 from pathlib import Path
 
-from PySide6.QtCore import Slot
-from PySide6.QtGui import QFont
-from PySide6.QtWidgets import (
+from PySide2.QtCore import Slot
+from PySide2.QtGui import QFont
+from PySide2.QtWidgets import (
     QCheckBox,
     QComboBox,
     QFileDialog,
@@ -50,7 +50,7 @@ class DownloadTab(QWidget):
         self._clear_url_btn = QPushButton("\u2715")  # HEAVY BALLOT X, più visibile in molti font
         self._clear_url_btn.setFixedSize(28, 28)
         self._clear_url_btn.setFont(
-            QFont(self._clear_url_btn.font().family(), 16, QFont.Weight.Bold)
+            QFont(self._clear_url_btn.font().family(), 16, QFont.Bold)
         )
         self._clear_url_btn.setStyleSheet(
             "color: white; padding: 0;"
@@ -207,12 +207,12 @@ class DownloadTab(QWidget):
         if success:
             self._status_label.setText("Download completato.")
             box = QMessageBox(self)
-            box.setIcon(QMessageBox.Icon.Information)
+            box.setIcon(QMessageBox.Information)
             box.setWindowTitle("Download completato")
             box.setText(f"Il file è stato salvato in:\n{self._output_dir}")
-            open_btn = box.addButton("Apri cartella", QMessageBox.ButtonRole.ActionRole)
-            box.addButton(QMessageBox.StandardButton.Ok)
-            box.exec()
+            open_btn = box.addButton("Apri cartella", QMessageBox.ActionRole)
+            box.addButton(QMessageBox.Ok)
+            box.exec_()
             if box.clickedButton() == open_btn:
                 self._open_folder(self._output_dir)
         else:

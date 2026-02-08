@@ -5,8 +5,8 @@ import subprocess
 import sys
 from pathlib import Path
 
-from PySide6.QtCore import Slot
-from PySide6.QtWidgets import (
+from PySide2.QtCore import Slot
+from PySide2.QtWidgets import (
     QFileDialog,
     QHBoxLayout,
     QLabel,
@@ -200,15 +200,15 @@ class ConvertTab(QWidget):
             fmt = getattr(self, "_last_format", "mp3")
             if out_dir:
                 box = QMessageBox(self)
-                box.setIcon(QMessageBox.Icon.Information)
+                box.setIcon(QMessageBox.Information)
                 box.setWindowTitle("Conversione completata")
                 box.setText(
                     f"I file .{fmt} sono stati salvati in:\n{out_dir}\n\n"
                     f"L'originale (.mp4) non viene modificato — il nuovo file ha estensione .{fmt}"
                 )
-                open_btn = box.addButton("Apri cartella", QMessageBox.ButtonRole.ActionRole)
-                box.addButton(QMessageBox.StandardButton.Ok)
-                box.exec()
+                open_btn = box.addButton("Apri cartella", QMessageBox.ActionRole)
+                box.addButton(QMessageBox.Ok)
+                box.exec_()
                 if box.clickedButton() == open_btn:
                     self._open_folder(out_dir)
         else:

@@ -4,7 +4,7 @@ import ctypes
 import logging
 import sys
 
-from PySide6.QtWidgets import QApplication, QMessageBox
+from PySide2.QtWidgets import QApplication, QMessageBox
 
 from .app import apply_hand_cursors, setup_app
 from .engines.ffmpeg_engine import check_ffmpeg_available

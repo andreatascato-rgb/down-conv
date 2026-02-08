@@ -1,7 +1,7 @@
 """Finestra principale."""
 
-from PySide6.QtGui import QIcon
-from PySide6.QtWidgets import QMainWindow, QTabWidget, QWidget
+from PySide2.QtGui import QIcon
+from PySide2.QtWidgets import QMainWindow, QTabWidget, QWidget
 
 from ..utils.paths import get_app_icon_path
 from .tabs.convert_tab import ConvertTab
@@ -27,7 +27,7 @@ class MainWindow(QMainWindow):
         tabs.addTab(DownloadTab(), "Download YouTube")
         tabs.addTab(ConvertTab(), "Conversione Audio")
 
-        from PySide6.QtWidgets import QVBoxLayout
+        from PySide2.QtWidgets import QVBoxLayout
 
         layout = QVBoxLayout()
         layout.setContentsMargins(0, 0, 0, 0)

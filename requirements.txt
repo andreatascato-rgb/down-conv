@@ -1,8 +1,8 @@
-# Down&Conv - Dipendenze Python
-# Python 3.12+
+# Down&Conv - Dipendenze Python (branch catalina, macOS 10.15)
+# Python 3.10 (PySide2 non supporta 3.11+)
 
 # GUI
-PySide6>=6.6.0
+PySide2>=5.15.0
 
 # Download YouTube (nightly per API aggiornate)
 # Alternativa stable: yt-dlp[default]>=2025.1.0

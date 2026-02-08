@@ -1,5 +1,7 @@
 # Down&Conv
 
+**Branch catalina:** build per macOS 10.15. Non evolve. Per Windows/Mac moderni usa `main`.
+
 [![CI](https://github.com/andreatascato-rgb/down-conv/actions/workflows/ci.yml/badge.svg)](https://github.com/andreatascato-rgb/down-conv/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 

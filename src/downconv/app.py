@@ -2,9 +2,9 @@
 
 import logging
 
-from PySide6.QtCore import Qt
-from PySide6.QtGui import QIcon
-from PySide6.QtWidgets import QApplication, QWidget
+from PySide2.QtCore import Qt
+from PySide2.QtGui import QIcon
+from PySide2.QtWidgets import QApplication, QWidget
 
 from .utils.paths import get_app_icon_path
 
@@ -24,7 +24,7 @@ def _set_hand_cursor_recursive(widget: QWidget) -> None:
     """Imposta PointingHandCursor sui widget interattivi (QSS non supporta cursor)."""
     type_name = type(widget).__name__
     if type_name in _CLICKABLE_TYPES:
-        widget.setCursor(Qt.CursorShape.PointingHandCursor)
+        widget.setCursor(Qt.PointingHandCursor)
     for child in widget.findChildren(QWidget):
         _set_hand_cursor_recursive(child)
 
