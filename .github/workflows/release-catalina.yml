@@ -43,8 +43,8 @@ jobs:
 
       - name: Fix Info.plist per Catalina (CFBundleShortVersionString deve essere stringa)
         run: |
-          /usr/libexec/PlistBuddy -c 'Set :CFBundleShortVersionString "1"' dist/DownConv.app/Contents/Info.plist
-          /usr/libexec/PlistBuddy -c 'Set :CFBundleVersion "1"' dist/DownConv.app/Contents/Info.plist
+          plutil -replace CFBundleShortVersionString -string "1" dist/DownConv.app/Contents/Info.plist
+          plutil -replace CFBundleVersion -string "1" dist/DownConv.app/Contents/Info.plist
 
       - name: Zip .app
         run: |
