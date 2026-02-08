@@ -11,6 +11,8 @@ on:
 jobs:
   build-macos-catalina:
     runs-on: macos-15-intel
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
         with:
