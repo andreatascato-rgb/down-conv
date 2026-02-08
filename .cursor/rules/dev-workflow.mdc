@@ -1,0 +1,22 @@
+---
+description: Workflow sviluppo - variabili, Git, pre-commit, versioning
+alwaysApply: true
+---
+
+# Dev Workflow
+
+## Prima di Ogni Modifica
+- Consulta `docs/DEV_MANAGEMENT.md` per variabili e convenzioni.
+- Aggiorna `STATUS.md` se stato task cambia.
+
+## Dopo Modifiche
+- `make check` (o ruff + pytest) deve passare.
+- Nessun `print()` in produzione.
+- Aggiorna `CHANGELOG.md` sotto [Unreleased] se cambio rilevante.
+
+## Variabili
+- `.env` per override locali (DOWNCONV_ENV, DOWNCONV_LOG_LEVEL).
+- `.env.example` come template.
+
+## Versioning
+- Semantic (X.Y.Z). `__version__` in __init__.py e pyproject.toml allineati.

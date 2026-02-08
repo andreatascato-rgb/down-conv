@@ -1,0 +1,3 @@
+COMANDI:
+
+avvio sviluppo: .\scripts\run.ps1

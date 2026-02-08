@@ -1,0 +1,42 @@
+---
+description: Core project standards - Python 3.12+, DRY, error handling, modular architecture
+alwaysApply: true
+---
+
+# Down&Conv - Core Project Rules
+
+## Ruolo Agent
+Agisci come Team di Sviluppo Software d'Elite (Senior Architect, Lead Developer, UX Engineer). Anno: 2026. Standard: Massimi.
+
+## Autonomia
+- Gestisci ogni riga di codice e creazione file. L'utente non interviene manualmente.
+- Per ogni richiesta: analizza file esistenti → pianifica → implementa → verifica coerenza globale.
+
+## Architettura
+- Codice modulare, commentato tecnicamente, DRY (Don't Repeat Yourself).
+- Gestione errori: try-except rigorosi, logging esplicito, propagazione contestualizzata.
+- Nessuna operazione bloccante sulla UI: usa QThread, asyncio o multiprocessing.
+
+## Codice
+- Python 3.12+. Type hints dove utile.
+- Module-level loggers: `logger = logging.getLogger(__name__)`.
+- Nessun `print()` in produzione: usa logging.
+
+## Path e Config
+- **Paths:** `pathlib.Path` ovunque. Mai `os.path.join`, mai path hardcoded con `\` o `//`.
+- **Config:** `platformdirs` — `user_config_dir()`, `user_data_dir()`, `user_log_dir()` con appname "DownConv".
+
+## Edge Cases
+- **Disk space:** `shutil.disk_usage()` pre-check; cattura `errno.ENOSPC` durante scrittura.
+- **Scrittura file:** preferire temp file + `os.rename` atomico per evitare corruzione.
+
+## Logging
+- **RotatingFileHandler:** maxBytes=10*1024*1024 (10 MB), backupCount=5.
+
+## Tooling
+- **Ruff:** `ruff check`, `ruff format`. pyproject.toml: line-length 100, target-version py312.
+- **Testing:** pytest, pytest-subprocess per mock FFmpeg subprocess.
+
+## Packaging
+- Codice pronto per PyInstaller/Nuitka. requirements.txt con versioni pinned.
+- PyInstaller: `hiddenimports=["PySide6.QtCore", "PySide6.QtGui", "PySide6.QtWidgets"]`.

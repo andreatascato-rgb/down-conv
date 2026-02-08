@@ -1,0 +1,38 @@
+---
+description: Error handling e edge cases - disk space, FFmpeg check, messaggi utente
+globs: **/*.py
+alwaysApply: false
+---
+
+# Error Handling & Edge Cases
+
+## FFmpeg Disponibilità
+All'avvio (main) o prima di usare tab Conversione:
+```python
+if shutil.which("ffmpeg") is None:
+    # QMessageBox o log: "FFmpeg non trovato. Installalo e aggiungilo al PATH."
+    raise RuntimeError("FFmpeg non trovato nel PATH")
+```
+
+## Spazio Disco
+- **Pre-check:** `shutil.disk_usage(output_dir).free` prima di download/conversione grandi.
+- **Cattura scrittura:** `except OSError as e: if e.errno == errno.ENOSPC` → "Spazio disco esaurito".
+- **Best practice:** Scrivere in temp, poi `os.rename` atomico verso destinazione.
+
+## Messaggi Utente
+- Sempre in italiano, chiari, non tecnici.
+- Per errori reti: "Errore di rete. Riprova."
+- Per permessi: "Impossibile scrivere nella cartella. Verifica i permessi."
+
+## Sovrascrittura File
+- UI: Checkbox "Sovrascrivi file esistenti".
+- yt-dlp: `overwrites: True` se checked.
+- FFmpeg: argomento `-y` se checked.
+
+## First-Run
+- FFmpeg check con QMessageBox e link a ffmpeg.org se non trovato.
+- Salvare cartella output default in config dopo prima selezione.
+
+## Testing
+- pytest-subprocess: `fp.register(["ffmpeg", ...], returncode=0)` per mock.
+- Mock yt-dlp: `@patch("yt_dlp.YoutubeDL")` con MagicMock.

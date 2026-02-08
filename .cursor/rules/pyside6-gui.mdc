@@ -1,0 +1,70 @@
+---
+description: PySide6 GUI patterns - QThread, signals, dark mode, progress, drag-drop
+globs: **/*.py
+alwaysApply: false
+---
+
+# PySide6 GUI Conventions
+
+## Pattern Worker Thread
+- **Preferire:** Worker che eredita da `QThread` e override `run()` — pattern più sicuro per cross-thread.
+- **Alternativa:** `QObject` con `moveToThread(QThread)` se necessario.
+- **Slots che ricevono da Worker:** Usare sempre `@Slot(...)` per garantire esecuzione nel main thread.
+- Mai operazioni I/O pesanti nel main thread.
+
+```python
+class DownloadWorker(QThread):
+    progress = Signal(dict)
+    finished = Signal(bool, str)
+
+    def run(self):
+        try:
+            # yt-dlp con progress_hooks → self.progress.emit(d)
+            self.finished.emit(True, "")
+        except Exception as e:
+            self.finished.emit(False, str(e))
+
+# Nel main thread
+self._worker.progress.connect(self.on_progress)
+
+@Slot(dict)
+def on_progress(self, data):
+    self.progress_bar.setValue(...)
+```
+
+## Cancellazione
+- **Batch FFmpeg:** Controllare `isInterruptionRequested()` tra un file e l'altro.
+- **yt-dlp:** Nessuna API nativa. Fallback: kill processo (cleanup temp).
+- **QThread:** Usare `requestInterruption()` sul thread; mai `terminate()`.
+
+## Progress Bar
+- **Determinate:** `setRange(0, 100)` + `setValue(n)`.
+- **Indeterminate:** `setRange(0, 0)` (animazione).
+
+## Dark Theme (QSS)
+Applicare stylesheet manuale (qdarkstyle Qt6 in sviluppo). Colori VS Code Dark+:
+```python
+DARK_QSS = """
+QMainWindow, QWidget { background-color: #1e1e1e; color: #d4d4d4; }
+QPushButton { background-color: #0d7377; color: white; border-radius: 4px; }
+QPushButton:hover { background-color: #14a3a8; }
+QLineEdit, QPlainTextEdit { background-color: #252526; color: #d4d4d4; border: 1px solid #3e3e42; border-radius: 4px; }
+QProgressBar { border: 1px solid #3e3e42; border-radius: 4px; text-align: center; }
+QProgressBar::chunk { background-color: #0d7377; }
+QTabWidget::pane { border: 1px solid #3e3e42; }
+"""
+app.setStyleSheet(DARK_QSS)
+```
+
+## Drag-and-Drop
+- `setAcceptDrops(True)` sul widget.
+- `dragEnterEvent`: `if event.mimeData().hasUrls(): event.acceptProposedAction()`.
+- `dropEvent`: `for url in event.mimeData().urls()` — `path = url.toLocalFile()` (file) o `url.toString()` (URL).
+- `dragMoveEvent`: `event.acceptProposedAction()`.
+
+## Animazioni (opzionale)
+- QPropertyAnimation + QGraphicsOpacityEffect per fade
+- EasingCurve.OutCubic, duration 350ms
+
+## Regole Qt
+- QWidget solo dal main thread. Child QObjects nel thread del parent.

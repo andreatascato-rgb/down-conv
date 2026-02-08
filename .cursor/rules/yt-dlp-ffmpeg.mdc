@@ -1,0 +1,66 @@
+---
+description: yt-dlp e FFmpeg integration - comandi, eccezioni, stderr, URL validation
+globs: **/download*.py, **/convert*.py, **/engines/*.py
+alwaysApply: false
+---
+
+# yt-dlp & FFmpeg Integration
+
+## yt-dlp
+- Nightly: `pip install "yt-dlp[default] @ git+https://github.com/yt-dlp/yt-dlp.git@master"`
+- `progress_hooks`: `status`, `downloaded_bytes`, `total_bytes`, `_percent_str`, `_speed_str`, `_eta_str`.
+- Format: `bestvideo+bestaudio/best` o `bestaudio/best` per audio.
+- **Qualità video:** `bv*[height<=720]+ba` (720p), `bv*[height<=1080]+ba` (1080p), `bv*[height<=2160]+ba` (4K).
+- **Sub:** `writesubtitles: True`, `writeautomaticsub: True`, `subtitleslangs: ['en','it']`.
+- **Perf:** `concurrent_fragment_downloads: 4-8`, `http_chunk_size: 10485760`, `retries: 3`, `fragment_retries: 10`.
+- **Retry:** `retry_sleep: 1`, `socket_timeout: 30`.
+- **Overwrite:** `overwrites: True`. **Playlist:** `ignoreerrors: True`, `playlist_items: '1-N'`.
+
+## URL Validation
+```python
+from yt_dlp.extractor import gen_extractor_classes
+def is_supported(url):
+    for ie in gen_extractor_classes():
+        if ie.suitable(url) and ie.IE_NAME != "generic":
+            return True
+    return False
+```
+
+## yt-dlp Exceptions → Messaggi Utente (IT)
+| Eccezione | Messaggio |
+|-----------|-----------|
+| UnavailableVideoError | "Video non disponibile (privato, eliminato o rimosso)" |
+| GeoRestrictedError | "Video non disponibile nella tua area geografica" |
+| ExtractorError | "Impossibile estrarre informazioni. Verifica l'URL." |
+| PostProcessingError | "Errore elaborazione file (FFmpeg)" |
+| ContentTooShortError | "Download incompleto (connessione interrotta?)" |
+| SameFileError | "File già esistente (usa opzione sovrascrivi)" |
+| HTTPError, RequestError | "Errore di rete. Riprova." |
+| SSLError | "Errore certificato SSL" |
+| DownloadError, YoutubeDLError | "Errore download" |
+
+Import: `from yt_dlp.utils import DownloadError, ExtractorError, UnavailableVideoError, ...`
+
+## FFmpeg Check
+```python
+if shutil.which("ffmpeg") is None:
+    raise RuntimeError("FFmpeg non trovato. Installalo e aggiungilo al PATH.")
+```
+Verificare all'avvio o prima di tab Conversione.
+
+## FFmpeg Comandi (metadata preservation)
+- **→ MP3:** `ffmpeg -hide_banner -loglevel error -i input -ab 320k -map_metadata 0 -id3v2_version 3 output.mp3`
+- **→ FLAC:** `-map_metadata 0 -c:a flac`
+- **→ M4A/ALAC:** `-map_metadata 0 -c:a alac -movflags use_metadata_tags`
+- **Subprocess:** `cmd = ["ffmpeg", "-hide_banner", "-loglevel", "error", "-i", str(in_path), "-map_metadata", "0", ...]`
+
+## FFmpeg Stderr Parsing
+- Usare `-hide_banner -loglevel error` per ridurre rumore.
+- Su `CalledProcessError`: cercare righe con "error", "invalid", "no such file", "permission denied"; altrimenti ultima riga stderr.
+
+## FFmpeg Overwrite
+- Aggiungere `-y` per sovrascrivere output senza chiedere.
+
+## Batch
+- **FFmpeg:** Multiprocessing.Pool (CPU-bound).
+- **yt-dlp multipli:** ThreadPoolExecutor max_workers 2-4, `run_in_executor` per evitare sovraccarico rete.

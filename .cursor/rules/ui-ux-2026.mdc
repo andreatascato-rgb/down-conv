@@ -1,0 +1,43 @@
+---
+description: UI/UX 2026 - font, layout, notifiche, accessibilità, first-run
+globs: **/gui/**/*.py, **/app.py
+alwaysApply: false
+---
+
+# UI/UX 2026
+
+## Layout e Spacing
+- `layout.setSpacing(12)` — tra widget
+- `layout.setContentsMargins(16, 16, 16, 16)` — margini
+- `border-radius: 6px` (input) / `8px` (button) in QSS
+
+## Font
+```css
+font-family: 'Segoe UI', 'SF Pro', 'Helvetica Neue', sans-serif;
+font-size: 13px;
+```
+Preferire font generici per cross-platform.
+
+## Notifiche (Toast)
+```python
+if QSystemTrayIcon.isSystemTrayAvailable():
+    tray.showMessage("Down&Conv", "Download completato!", QSystemTrayIcon.Information, 3000)
+```
+
+## Accessibilità
+- `QWidget.setTabOrder(w1, w2)` — ordine Tab
+- Contrasto WCAG: 4.5:1 minimo per testo (#d4d4d4 su #1e1e1e ✓)
+- Focus policy: `Qt.StrongFocus` dove appropriato
+
+## First-Run
+- Check FFmpeg con messaggio chiaro + link download
+- Cartella output default: `user_data_dir` o Downloads
+- Checklist visiva se multi-step
+
+## Loading
+- Indeterminato: `progress.setRange(0, 0)`
+- GIF animato: QMovie + QLabel (non in QSS)
+
+## Icone
+- Metafora chiara, flat, leggibile 16x16-256x256
+- Qt Resource System (.qrc) per bundle
