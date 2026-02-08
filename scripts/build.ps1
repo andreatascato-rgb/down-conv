@@ -13,11 +13,11 @@ if (-not (Test-Path $py)) {
 & $pip install pyinstaller -q | Out-Null
 
 Write-Host "Build in corso (2-5 min)..."
-& .venv\Scripts\pyinstaller.exe --onefile --windowed --name DownConv `
+& .venv\Scripts\pyinstaller.exe --onefile --windowed --name DownConv --paths=src `
     --hidden-import=PySide6.QtCore --hidden-import=PySide6.QtGui --hidden-import=PySide6.QtWidgets `
     --hidden-import=yt_dlp `
     --add-data "src/downconv/resources;downconv/resources" `
-    src/downconv/main.py
+    src/run_downconv.py
 
 if ($LASTEXITCODE -eq 0) {
     $exe = Get-ChildItem dist\*.exe

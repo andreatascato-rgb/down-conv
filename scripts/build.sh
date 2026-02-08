@@ -15,11 +15,11 @@ fi
 "$PIP" install pyinstaller -q
 
 echo "Build in corso (2-5 min)..."
-"$PY" -m PyInstaller --onefile --windowed --name DownConv \
+"$PY" -m PyInstaller --onefile --windowed --name DownConv --paths=src \
     --hidden-import=PySide6.QtCore --hidden-import=PySide6.QtGui --hidden-import=PySide6.QtWidgets \
     --hidden-import=yt_dlp \
     --add-data "src/downconv/resources:downconv/resources" \
-    src/downconv/main.py
+    src/run_downconv.py
 
 echo ""
 echo "OK: dist/DownConv.app"

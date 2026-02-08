@@ -6,9 +6,12 @@ Tutti i cambiamenti notevoli sono documentati qui. Formato [Keep a Changelog](ht
 
 ### Added
 - Setup GitHub: CI (GitHub Actions), LICENSE MIT, CONTRIBUTING.md
-- Regola preserve-working-code: protezione codice funzionante da modifiche non richieste
-- Badge CI e License in README
-- Issue template (bug, feature) e PR template in .github/
+
+
+## [0.4.3] - 2026-02-08
+
+### Fixed
+- .exe: ImportError "relative import no parent package" — launcher run_downconv.py con import assoluti
 
 ## [0.4.2] - 2026-02-08
 
