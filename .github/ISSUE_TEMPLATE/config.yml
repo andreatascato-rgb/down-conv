@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Documentazione
+    url: https://github.com/andreatascato-rgb/down-conv/blob/main/docs/INDEX.md
+    about: Indice documentazione progetto

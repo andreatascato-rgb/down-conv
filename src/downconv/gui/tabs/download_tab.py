@@ -5,7 +5,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from PySide6.QtCore import Qt, Slot
+from PySide6.QtCore import Slot
 from PySide6.QtGui import QFont
 from PySide6.QtWidgets import (
     QCheckBox,
@@ -49,12 +49,18 @@ class DownloadTab(QWidget):
         url_layout.addWidget(self._url_edit, 1)
         self._clear_url_btn = QPushButton("\u2715")  # HEAVY BALLOT X, più visibile in molti font
         self._clear_url_btn.setFixedSize(28, 28)
-        self._clear_url_btn.setFont(QFont(self._clear_url_btn.font().family(), 16, QFont.Weight.Bold))
-        self._clear_url_btn.setStyleSheet("color: white; padding: 0;")  # forza testo bianco visibile
+        self._clear_url_btn.setFont(
+            QFont(self._clear_url_btn.font().family(), 16, QFont.Weight.Bold)
+        )
+        self._clear_url_btn.setStyleSheet(
+            "color: white; padding: 0;"
+        )  # forza testo bianco visibile
         self._clear_url_btn.setToolTip("Svuota URL")
         self._clear_url_btn.clicked.connect(lambda: self._url_edit.clear())
         self._clear_url_btn.setVisible(False)
-        self._url_edit.textChanged.connect(lambda t: self._clear_url_btn.setVisible(bool(t.strip())))
+        self._url_edit.textChanged.connect(
+            lambda t: self._clear_url_btn.setVisible(bool(t.strip()))
+        )
         url_layout.addWidget(self._clear_url_btn)
         layout.addLayout(url_layout)
 
@@ -73,14 +79,16 @@ class DownloadTab(QWidget):
         fmt_layout = QHBoxLayout()
         fmt_layout.addWidget(QLabel("Formato:"))
         self._format_combo = QComboBox()
-        self._format_combo.addItems([
-            "Video (max qualità)",
-            "Audio MP3 (320k)",
-            "Audio MP3 (192k)",
-            "Audio M4A (AAC)",
-            "Audio OGG (Opus)",
-            "Audio Nativo (webm/m4a)",
-        ])
+        self._format_combo.addItems(
+            [
+                "Video (max qualità)",
+                "Audio MP3 (320k)",
+                "Audio MP3 (192k)",
+                "Audio M4A (AAC)",
+                "Audio OGG (Opus)",
+                "Audio Nativo (webm/m4a)",
+            ]
+        )
         fmt_layout.addWidget(self._format_combo)
         layout.addLayout(fmt_layout)
 
@@ -124,9 +132,13 @@ class DownloadTab(QWidget):
         if idx == 0:
             return "bestvideo+bestaudio/best", None
         if idx == 1:
-            return "bestaudio/best", [{"key": "FFmpegExtractAudio", "preferredcodec": "mp3", "preferredquality": "320"}]
+            return "bestaudio/best", [
+                {"key": "FFmpegExtractAudio", "preferredcodec": "mp3", "preferredquality": "320"}
+            ]
         if idx == 2:
-            return "bestaudio/best", [{"key": "FFmpegExtractAudio", "preferredcodec": "mp3", "preferredquality": "192"}]
+            return "bestaudio/best", [
+                {"key": "FFmpegExtractAudio", "preferredcodec": "mp3", "preferredquality": "192"}
+            ]
         if idx == 3:
             return "bestaudio/best", [{"key": "FFmpegExtractAudio", "preferredcodec": "m4a"}]
         if idx == 4:
@@ -139,7 +151,9 @@ class DownloadTab(QWidget):
             QMessageBox.warning(self, "Attenzione", "Inserisci un URL.")
             return
         if not is_url_supported(url):
-            QMessageBox.warning(self, "Attenzione", "URL non supportato. Verifica che sia un link YouTube valido.")
+            QMessageBox.warning(
+                self, "Attenzione", "URL non supportato. Verifica che sia un link YouTube valido."
+            )
             return
 
         self._download_btn.setEnabled(False)
@@ -187,9 +201,7 @@ class DownloadTab(QWidget):
             box = QMessageBox(self)
             box.setIcon(QMessageBox.Icon.Information)
             box.setWindowTitle("Download completato")
-            box.setText(
-                f"Il file è stato salvato in:\n{self._output_dir}"
-            )
+            box.setText(f"Il file è stato salvato in:\n{self._output_dir}")
             open_btn = box.addButton("Apri cartella", QMessageBox.ButtonRole.ActionRole)
             box.addButton(QMessageBox.StandardButton.Ok)
             box.exec()

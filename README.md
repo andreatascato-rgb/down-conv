@@ -1,5 +1,8 @@
 # Down&Conv
 
+[![CI](https://github.com/andreatascato-rgb/down-conv/actions/workflows/ci.yml/badge.svg)](https://github.com/andreatascato-rgb/down-conv/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 Applicazione desktop professionale per **download video/audio da YouTube** e **conversione audio batch**.
 
 - **Download:** yt-dlp, risoluzioni massime

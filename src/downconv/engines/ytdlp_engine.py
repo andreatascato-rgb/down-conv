@@ -1,8 +1,8 @@
 """Engine yt-dlp per download YouTube."""
 
 import logging
+from collections.abc import Callable
 from pathlib import Path
-from typing import Callable
 
 from yt_dlp import YoutubeDL
 

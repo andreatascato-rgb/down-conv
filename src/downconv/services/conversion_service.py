@@ -54,6 +54,7 @@ class ConversionWorker(QThread):
                         if self.isInterruptionRequested():
                             return
                         on_progress(_i + 1, total, p)
+
                     return cb
 
                 batch_results = engine.convert_batch(

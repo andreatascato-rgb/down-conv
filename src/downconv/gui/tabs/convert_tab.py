@@ -1,12 +1,11 @@
 """Tab Conversione Audio Batch."""
 
-from pathlib import Path
-
 import os
 import subprocess
 import sys
+from pathlib import Path
 
-from PySide6.QtCore import Qt, Slot
+from PySide6.QtCore import Slot
 from PySide6.QtWidgets import (
     QFileDialog,
     QHBoxLayout,
@@ -70,14 +69,16 @@ class ConvertTab(QWidget):
         from PySide6.QtWidgets import QComboBox
 
         self._format_combo = QComboBox()
-        self._format_combo.addItems([
-            "MP3",      # Universale
-            "FLAC",     # Lossless
-            "M4A",      # AAC/Apple
-            "OGG",      # Vorbis
-            "WAV",      # Raw lossless
-            "OPUS",     # Efficiente
-        ])
+        self._format_combo.addItems(
+            [
+                "MP3",  # Universale
+                "FLAC",  # Lossless
+                "M4A",  # AAC/Apple
+                "OGG",  # Vorbis
+                "WAV",  # Raw lossless
+                "OPUS",  # Efficiente
+            ]
+        )
         opt_layout.addWidget(self._format_combo)
         opt_layout.addWidget(QLabel("Qualità:"))
         self._quality_combo = QComboBox()
@@ -119,14 +120,15 @@ class ConvertTab(QWidget):
         layout.addStretch()
 
     def _add_files(self) -> None:
-        paths, _ = QFileDialog.getOpenFileNames(
-            self,
-            "Seleziona file audio o video",
-            str(Path.home()),
-            "Audio e video (*.flac *.mp3 *.m4a *.ogg *.wav *.aac *.mp4 *.mkv *.avi *.mov *.webm *.wmv *.m4v);;"
+        filters = (
+            "Audio e video (*.flac *.mp3 *.m4a *.ogg *.wav *.aac *.mp4 *.mkv *.avi "
+            "*.mov *.webm *.wmv *.m4v);;"
             "Video (*.mp4 *.mkv *.avi *.mov *.webm *.wmv *.m4v);;"
             "Audio (*.flac *.mp3 *.m4a *.ogg *.wav *.aac);;"
-            "Tutti (*.*)",
+            "Tutti (*.*)"
+        )
+        paths, _ = QFileDialog.getOpenFileNames(
+            self, "Seleziona file audio o video", str(Path.home()), filters
         )
         for p in paths:
             self._list.addItem(p)

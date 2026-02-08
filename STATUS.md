@@ -6,7 +6,7 @@
 
 ## In Progress
 
-- [ ] Test completi e refinement UI
+- [ ] Test completi
 
 ---
 
@@ -21,6 +21,7 @@
 - [x] Services (DownloadWorker, ConversionWorker)
 - [x] GUI (MainWindow, DownloadTab, ConvertTab)
 - [x] Dark theme, drag-drop, progress
+- [x] Refinement UI: pulsante Svuota URL, icona app (finestra + taskbar), manina su widget, fix QSS cursor
 
 ---
 
