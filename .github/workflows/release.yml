@@ -1,11 +1,15 @@
 # Down&Conv - Build Release
-# Su creazione Release, builda .exe e lo carica come asset
+# Su push tag v* (es. v0.4.1): builda .exe, crea Release e carica asset
 
 name: Release
 
 on:
-  release:
-    types: [published]
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
 
 jobs:
   build-windows:
@@ -45,6 +49,6 @@ jobs:
       - name: Upload to Release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ github.ref_name }}
           files: DownConv-${{ github.ref_name }}-win64.exe
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          generate_release_notes: true
