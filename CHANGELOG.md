@@ -6,6 +6,9 @@ Tutti i cambiamenti notevoli sono documentati qui. Formato [Keep a Changelog](ht
 
 ### Added
 - Supporto macOS: build .app, CI macos-latest, script run.sh e build.sh
+
+### Changed
+- Release workflow: python -m PyInstaller, --noconfirm --clean, ls debug per macOS
 - Setup GitHub: CI (GitHub Actions), LICENSE MIT, CONTRIBUTING.md
 - Regola preserve-working-code: protezione codice funzionante da modifiche non richieste
 - Piano rilascio produzione (RELEASE_CHECKLIST.md), workflow build .exe su Release

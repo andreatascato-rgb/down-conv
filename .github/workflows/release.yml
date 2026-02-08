@@ -30,7 +30,7 @@ jobs:
 
       - name: Build executable
         run: |
-          pyinstaller --onefile --windowed --name DownConv `
+          python -m PyInstaller --noconfirm --clean --onefile --windowed --name DownConv `
             --hidden-import=PySide6.QtCore --hidden-import=PySide6.QtGui --hidden-import=PySide6.QtWidgets `
             --hidden-import=yt_dlp `
             --add-data "src/downconv/resources;downconv/resources" `
@@ -71,7 +71,7 @@ jobs:
 
       - name: Build .app
         run: |
-          pyinstaller --onefile --windowed --name DownConv \
+          python -m PyInstaller --noconfirm --clean --onefile --windowed --name DownConv \
             --hidden-import=PySide6.QtCore --hidden-import=PySide6.QtGui --hidden-import=PySide6.QtWidgets \
             --hidden-import=yt_dlp \
             --add-data "src/downconv/resources:downconv/resources" \
@@ -79,9 +79,8 @@ jobs:
 
       - name: Zip .app
         run: |
-          cd dist
-          zip -r "../DownConv-${{ github.ref_name }}-macos.zip" DownConv.app
-          cd ..
+          ls -la dist/
+          cd dist && zip -r "../DownConv-${{ github.ref_name }}-macos.zip" DownConv.app && cd ..
 
       - name: Upload to Release
         uses: softprops/action-gh-release@v2
