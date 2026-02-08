@@ -33,8 +33,9 @@ jobs:
         env:
           MACOSX_DEPLOYMENT_TARGET: "10.15"
         run: |
-          python -m PyInstaller --noconfirm --clean --onefile --windowed --name DownConv \
+          python -m PyInstaller --noconfirm --clean --onedir --windowed --name DownConv \
             --paths=src \
+            --collect-all PySide2 \
             --hidden-import=PySide2.QtCore --hidden-import=PySide2.QtGui --hidden-import=PySide2.QtWidgets \
             --hidden-import=yt_dlp \
             --add-data "src/downconv/resources:downconv/resources" \
