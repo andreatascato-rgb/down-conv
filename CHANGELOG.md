@@ -10,6 +10,17 @@ Tutti i cambiamenti notevoli sono documentati qui. Formato [Keep a Changelog](ht
 - Badge CI e License in README
 - Issue template (bug, feature) e PR template in .github/
 
+## [0.4.0] - 2026-02-08
+
+### Added
+- Batch conversione parallelo (ThreadPoolExecutor, max 4 worker): 2-4× più veloce su batch grandi
+- Download yt-dlp: concurrent_fragment_downloads 8, aria2c opzionale se in PATH
+- Test convert_batch (empty, nonexistent)
+
+### Changed
+- FfmpegEngine.convert_batch: ora parallelo invece che sequenziale (API_DESIGN allineato)
+- ConversionWorker: batch unico con output_dirs per opzione "stessa cartella"
+
 ## [0.3.0] - 2026-02-08
 
 ### Added

@@ -3,7 +3,9 @@
 import logging
 import shutil
 import subprocess
+import threading
 from collections.abc import Callable
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
@@ -137,20 +139,61 @@ class FfmpegEngine:
         max_workers: int = 4,
         progress_callback: Callable[[int, int, Path], None] | None = None,
         overwrite: bool = True,
+        output_dirs: list[Path] | None = None,
+        stop_check: Callable[[], bool] | None = None,
     ) -> list[tuple[Path, bool]]:
-        """Batch sequenziale (per semplicità, evitando GIL issues con multiprocessing in Qt)."""
+        """Batch parallelo con ThreadPoolExecutor. FFmpeg in subprocess rilascia GIL."""
+        if not files:
+            return []
+
         output_dir = Path(output_dir)
-        output_dir.mkdir(parents=True, exist_ok=True)
-        results: list[tuple[Path, bool]] = []
+        output_format = output_format.strip().lower()
         total = len(files)
 
-        output_format = output_format.strip().lower()
+        # Costruisci task (input, output_path); output_dirs per stesso-folder
+        use_output_dirs = output_dirs and len(output_dirs) >= len(files)
+        tasks: list[tuple[Path, Path]] = []
         for i, inp in enumerate(files):
+            out_dir = Path(output_dirs[i]) if use_output_dirs else output_dir
+            out_dir.mkdir(parents=True, exist_ok=True)
             stem = Path(inp).stem
-            out_path = output_dir / f"{stem}.{output_format}"
+            out_path = out_dir / f"{stem}.{output_format}"
+            tasks.append((inp, out_path))
+
+        results: list[tuple[Path, bool]] = []
+        completed_lock = threading.Lock()
+        completed_count = 0
+
+        def _convert_task(inp: Path, out_path: Path) -> tuple[Path, bool]:
             ok, _ = self.convert(inp, out_path, output_format, quality, overwrite=overwrite)
-            results.append((inp, ok))
+            return (inp, ok)
+
+        def _on_done(inp: Path, ok: bool) -> None:
+            nonlocal completed_count
+            with completed_lock:
+                completed_count += 1
+                n = completed_count
             if progress_callback:
-                progress_callback(i + 1, total, inp)
+                progress_callback(n, total, inp)
+
+        workers = min(max_workers, total)
+        with ThreadPoolExecutor(max_workers=workers) as executor:
+            futures = {}
+            for inp, out_path in tasks:
+                if stop_check and stop_check():
+                    break
+                fut = executor.submit(_convert_task, inp, out_path)
+                futures[fut] = inp
+
+            for fut in as_completed(futures):
+                inp = futures[fut]
+                try:
+                    inp, ok = fut.result()
+                    results.append((inp, ok))
+                    _on_done(inp, ok)
+                except Exception as e:
+                    logger.exception("Errore conversione %s: %s", inp, e)
+                    results.append((inp, False))
+                    _on_done(inp, False)
 
         return results

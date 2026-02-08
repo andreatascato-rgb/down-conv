@@ -42,39 +42,20 @@ class ConversionWorker(QThread):
                 return
             self.progress.emit(current, total, path.name)
 
-        total = len(self._files)
-        if self._same_folder:
-            results = []
-            for i, inp in enumerate(self._files):
-                if self.isInterruptionRequested():
-                    break
+        output_dirs = [inp.parent for inp in self._files] if self._same_folder else None
+        output_dir = self._output_dir or (self._files[0].parent if self._files else Path("."))
 
-                def make_cb(idx: int):
-                    def cb(c: int, t: int, p: Path, _i: int = idx) -> None:
-                        if self.isInterruptionRequested():
-                            return
-                        on_progress(_i + 1, total, p)
-
-                    return cb
-
-                batch_results = engine.convert_batch(
-                    [inp],
-                    inp.parent,
-                    self._output_format,
-                    quality=self._quality,
-                    progress_callback=make_cb(i),
-                    overwrite=self._overwrite,
-                )
-                results.extend(batch_results)
-        else:
-            results = engine.convert_batch(
-                self._files,
-                self._output_dir,
-                self._output_format,
-                quality=self._quality,
-                progress_callback=on_progress,
-                overwrite=self._overwrite,
-            )
+        results = engine.convert_batch(
+            self._files,
+            output_dir,
+            self._output_format,
+            quality=self._quality,
+            max_workers=4,
+            progress_callback=on_progress,
+            overwrite=self._overwrite,
+            output_dirs=output_dirs,
+            stop_check=lambda: self.isInterruptionRequested(),
+        )
         failed = [p for p, ok in results if not ok]
         if failed:
             self.finished.emit(False, f"Errori su {len(failed)} file")

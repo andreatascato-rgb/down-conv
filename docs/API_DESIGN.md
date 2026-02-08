@@ -67,8 +67,10 @@ class FfmpegEngine:
         quality: str = "lossless",
         max_workers: int = 4,
         progress_callback: Callable[[int, int, Path], None] | None = None,
+        output_dirs: list[Path] | None = None,
+        stop_check: Callable[[], bool] | None = None,
     ) -> list[tuple[Path, bool]]:
-        """Batch parallelo. Callback: (current, total, current_file)."""
+        """Batch parallelo (ThreadPoolExecutor). output_dirs per stesso-folder, stop_check per cancel."""
 ```
 
 ### Metadata Preservation

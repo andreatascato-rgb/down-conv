@@ -1,12 +1,17 @@
 """Engine yt-dlp per download YouTube."""
 
 import logging
+import shutil
 from collections.abc import Callable
 from pathlib import Path
 
 from yt_dlp import YoutubeDL
 
 logger = logging.getLogger(__name__)
+
+# Parametri performance (yt-dlp-ffmpeg.mdc: 4-8 per concurrent_fragment_downloads)
+CONCURRENT_FRAGMENTS = 8
+HTTP_CHUNK_SIZE = 10485760  # 10 MB
 
 # Messaggi utente per eccezioni
 EXCEPTION_MESSAGES = {
@@ -75,10 +80,15 @@ class YtdlpEngine:
             "overwrites": overwrite,
             "retries": 3,
             "fragment_retries": 10,
-            "http_chunk_size": 10485760,
-            "concurrent_fragment_downloads": 4,
+            "http_chunk_size": HTTP_CHUNK_SIZE,
+            "concurrent_fragment_downloads": CONCURRENT_FRAGMENTS,
             "socket_timeout": 30,
         }
+        # aria2c: download multiplexed, molto più veloce se disponibile
+        if shutil.which("aria2c"):
+            opts["external_downloader"] = "aria2c"
+            opts["external_downloader_args"] = ["-x", "16", "-k", "1M"]
+            logger.debug("Usando aria2c per download accelerato")
         if postprocessors:
             opts["postprocessors"] = postprocessors
 

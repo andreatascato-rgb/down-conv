@@ -12,6 +12,7 @@
 
 ## Done
 
+- [x] Ottimizzazione performance: batch conversione parallelo, download yt-dlp (fragmenti, aria2c)
 - [x] Documentazione architettura
 - [x] Regole Cursor
 - [x] Ricerca tecnica 2026
