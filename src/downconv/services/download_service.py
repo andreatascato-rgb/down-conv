@@ -33,17 +33,21 @@ class DownloadWorker(QThread):
 
     def run(self) -> None:
         """Eseguito in QThread."""
-        engine = YtdlpEngine(overwrite=self._overwrite)
+        try:
+            engine = YtdlpEngine(overwrite=self._overwrite)
 
-        def on_progress(d: dict) -> None:
-            self.progress.emit(d)
+            def on_progress(d: dict) -> None:
+                self.progress.emit(d)
 
-        ok, msg = engine.download(
-            self._url,
-            self._output_dir,
-            format=self._format,
-            progress_callback=on_progress,
-            overwrite=self._overwrite,
-            postprocessors=self._postprocessors,
-        )
-        self.finished.emit(ok, msg)
+            ok, msg = engine.download(
+                self._url,
+                self._output_dir,
+                format=self._format,
+                progress_callback=on_progress,
+                overwrite=self._overwrite,
+                postprocessors=self._postprocessors,
+            )
+            self.finished.emit(ok, msg)
+        except Exception as e:
+            logger.exception("DownloadWorker crash: %s", e)
+            self.finished.emit(False, str(e))

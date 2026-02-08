@@ -7,6 +7,14 @@ Tutti i cambiamenti notevoli sono documentati qui. Formato [Keep a Changelog](ht
 ### Added
 - Setup GitHub: CI (GitHub Actions), LICENSE MIT, CONTRIBUTING.md
 
+### Fixed
+- Crash al click Scarica: excepthook globale, try-except in worker e _start_download
+
+
+## [0.4.4] - 2026-02-08
+
+### Fixed
+- Crash al click Scarica: excepthook per mostrare errore, try-except in worker e verifica URL
 
 ## [0.4.3] - 2026-02-08
 

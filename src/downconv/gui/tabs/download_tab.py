@@ -150,9 +150,17 @@ class DownloadTab(QWidget):
         if not url:
             QMessageBox.warning(self, "Attenzione", "Inserisci un URL.")
             return
-        if not is_url_supported(url):
-            QMessageBox.warning(
-                self, "Attenzione", "URL non supportato. Verifica che sia un link YouTube valido."
+        try:
+            if not is_url_supported(url):
+                QMessageBox.warning(
+                    self,
+                    "Attenzione",
+                    "URL non supportato. Verifica che sia un link YouTube valido.",
+                )
+                return
+        except Exception as e:
+            QMessageBox.critical(
+                self, "Errore", f"Verifica URL fallita: {e}\nProva con un link YouTube valido."
             )
             return
 

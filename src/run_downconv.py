@@ -8,7 +8,7 @@ _src = Path(__file__).resolve().parent
 if str(_src) not in sys.path:
     sys.path.insert(0, str(_src))
 
-from downconv.main import main
+from downconv.main import main  # noqa: E402
 
 if __name__ == "__main__":
     sys.exit(main())
