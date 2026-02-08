@@ -4,6 +4,7 @@ import logging
 import os
 import shutil
 import subprocess
+import sys
 import tempfile
 import threading
 from collections.abc import Callable
@@ -128,6 +129,7 @@ class FfmpegEngine:
             cmd[-1] = str(tmp_path)
             output_path = tmp_path
 
+        creationflags = subprocess.CREATE_NO_WINDOW if sys.platform == "win32" else 0
         try:
             result = subprocess.run(
                 cmd,
@@ -135,6 +137,7 @@ class FfmpegEngine:
                 text=True,
                 check=False,
                 timeout=CONVERT_TIMEOUT_SEC,
+                creationflags=creationflags,
             )
             if result.returncode != 0:
                 if output_path != final_output and output_path.exists():

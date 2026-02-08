@@ -7,6 +7,11 @@ Tutti i cambiamenti notevoli sono documentati qui. Formato [Keep a Changelog](ht
 ### Added
 - Setup GitHub: CI (GitHub Actions), LICENSE MIT, CONTRIBUTING.md
 
+## [0.4.5] - 2026-02-08
+
+### Fixed
+- Finestra terminale al click Converti: CREATE_NO_WINDOW per subprocess FFmpeg (Windows)
+
 ## [0.4.4] - 2026-02-08
 
 ### Fixed
