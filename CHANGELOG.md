@@ -5,16 +5,20 @@ Tutti i cambiamenti notevoli sono documentati qui. Formato [Keep a Changelog](ht
 ## [Unreleased]
 
 ### Added
-- Supporto macOS: build .app, CI macos-latest, script run.sh e build.sh
-
-### Changed
-- Release workflow: python -m PyInstaller, --noconfirm --clean, ls debug per macOS
 - Setup GitHub: CI (GitHub Actions), LICENSE MIT, CONTRIBUTING.md
 - Regola preserve-working-code: protezione codice funzionante da modifiche non richieste
-- Piano rilascio produzione (RELEASE_CHECKLIST.md), workflow build .exe su Release
-- README: sezione Download per utenti finali
 - Badge CI e License in README
 - Issue template (bug, feature) e PR template in .github/
+
+## [0.4.2] - 2026-02-08
+
+### Added
+- Supporto macOS: build .app, CI macos-latest, script run.sh e build.sh
+- Piano rilascio produzione (RELEASE_CHECKLIST.md), workflow build .exe su Release
+- README: sezione Download per utenti finali
+
+### Changed
+- Release workflow: python -m PyInstaller, --noconfirm --clean, fix build
 
 ## [0.4.1] - 2026-02-08
 
