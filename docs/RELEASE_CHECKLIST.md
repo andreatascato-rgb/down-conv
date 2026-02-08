@@ -19,7 +19,7 @@
 
 ### 2.1 Build
 
-- [ ] **PyInstaller** produce `.exe` funzionante
+- [ ] **PyInstaller** produce `.exe` funzionante (`.\scripts\build.ps1`)
 - [ ] Icona app inclusa nel bundle
 - [ ] yt-dlp e dipendenze incluse (hidden imports)
 - [ ] Test: eseguire `.exe` su PC pulito (senza Python)
@@ -76,6 +76,7 @@ git push origin v0.4.1
 
 | File | Ruolo |
 |------|-------|
+| `scripts/build.ps1` | Build .exe locale (test pre-release) |
 | `DownConv.spec` | Config PyInstaller (opzionale, genera da build) |
 | `.github/workflows/release.yml` | Build .exe su tag, upload Release |
 | `README.md` | Download, requisiti, istruzioni utente |
