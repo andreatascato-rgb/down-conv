@@ -1,0 +1,50 @@
+# Down&Conv - Build Release
+# Su creazione Release, builda .exe e lo carica come asset
+
+name: Release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller
+
+      - name: Build executable
+        run: |
+          pyinstaller --onefile --windowed --name DownConv `
+            --hidden-import=PySide6.QtCore --hidden-import=PySide6.QtGui --hidden-import=PySide6.QtWidgets `
+            --hidden-import=yt_dlp `
+            --add-data "src/downconv/resources;downconv/resources" `
+            src/downconv/main.py
+
+      - name: Get version
+        id: version
+        run: echo "VERSION=${{ github.ref_name }}" >> $env:GITHUB_OUTPUT
+
+      - name: Rename artifact
+        run: |
+          $exe = Get-ChildItem dist\*.exe
+          Rename-Item $exe.FullName "DownConv-${{ github.ref_name }}-win64.exe"
+          Move-Item "dist\DownConv-${{ github.ref_name }}-win64.exe" .
+
+      - name: Upload to Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: DownConv-${{ github.ref_name }}-win64.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -26,6 +26,12 @@
 
 ---
 
+## Done (release prep)
+
+- [x] Piano rilascio produzione (RELEASE_CHECKLIST.md)
+- [x] Workflow GitHub: build .exe su Release
+- [x] README: sezione Download per utenti finali
+
 ## Backlog
 
 - [ ] System tray e notifiche

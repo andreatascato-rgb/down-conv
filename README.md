@@ -8,41 +8,47 @@ Applicazione desktop professionale per **download video/audio da YouTube** e **c
 - **Download:** yt-dlp, risoluzioni massime
 - **Conversione:** FFmpeg, preservazione metadati, lossless, multithread
 
-## Stack
+## Download (utenti finali)
+
+1. Vai a [Releases](https://github.com/andreatascato-rgb/down-conv/releases)
+2. Scarica `DownConv-vX.X.X-win64.exe` (ultima versione)
+3. [Installa FFmpeg](https://ffmpeg.org/download.html) e aggiungilo al PATH (richiesto per conversione)
+4. Avvia l'eseguibile — nessuna installazione Python necessaria
+
+**Requisiti:** Windows 10+, FFmpeg in PATH
+
+---
+
+## Sviluppo
+
+### Stack
 
 - Python 3.12+
 - PySide6 (GUI)
 - yt-dlp (nightly)
 - FFmpeg (sistema)
 
-## Documentazione
-
-Vedi `docs/INDEX.md` per navigazione completa.
-
-- `docs/ARCHITECTURE.md` — Architettura
-- `docs/DEVELOPMENT_GUIDE.md` — Setup e sviluppo
-- `AGENTS.md` — Istruzioni per Agent Cursor
-
-## Setup
+### Setup
 
 ```bash
 python -m venv .venv
 .venv\Scripts\activate    # Windows
-# source .venv/bin/activate  # Linux/macOS
 pip install -r requirements.txt
 ```
 
-## Avvio
+### Avvio
 
 ```bash
-# Da progetto root
 cd src && python -m downconv.main
-
-# O con script (Windows)
-.\scripts\run.ps1
+# O: .\scripts\run.ps1 (Windows)
 ```
 
-FFmpeg deve essere installato e in PATH per la conversione audio.
+### Documentazione
+
+- `docs/ARCHITECTURE.md` — Architettura
+- `docs/DEVELOPMENT_GUIDE.md` — Setup e sviluppo
+- `docs/RELEASE_CHECKLIST.md` — Rilascio produzione
+- `AGENTS.md` — Istruzioni per Agent Cursor
 
 ## Licenza
 

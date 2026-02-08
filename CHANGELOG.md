@@ -7,6 +7,8 @@ Tutti i cambiamenti notevoli sono documentati qui. Formato [Keep a Changelog](ht
 ### Added
 - Setup GitHub: CI (GitHub Actions), LICENSE MIT, CONTRIBUTING.md
 - Regola preserve-working-code: protezione codice funzionante da modifiche non richieste
+- Piano rilascio produzione (RELEASE_CHECKLIST.md), workflow build .exe su Release
+- README: sezione Download per utenti finali
 - Badge CI e License in README
 - Issue template (bug, feature) e PR template in .github/
 

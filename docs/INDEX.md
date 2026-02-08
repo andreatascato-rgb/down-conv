@@ -18,6 +18,7 @@
 | [RESEARCH_LACUNE.md](RESEARCH_LACUNE.md) | Ricerca lacune: Qt, FFmpeg, yt-dlp, tooling, UI |
 | [RESEARCH_2026_AVANZATO.md](RESEARCH_2026_AVANZATO.md) | Ricerca avanzata: UI, UX, performance, notifiche, accessibilità |
 | [DEV_MANAGEMENT.md](DEV_MANAGEMENT.md) | Gestione sviluppo: variabili, Git, pre-commit, versioning |
+| [RELEASE_CHECKLIST.md](RELEASE_CHECKLIST.md) | Checklist rilascio produzione, build .exe, GitHub Release |
 
 ---
 
@@ -38,7 +39,7 @@
 | Refactor | ARCHITECTURE, WORKFLOW |
 | Download logic | yt-dlp-ffmpeg.mdc, API_DESIGN |
 | UI/GUI | pyside6-gui.mdc, ARCHITECTURE |
-| Packaging | TECH_STACK, DEVELOPMENT_GUIDE |
+| Packaging / Rilascio | TECH_STACK, DEVELOPMENT_GUIDE, RELEASE_CHECKLIST |
 
 ---
 
