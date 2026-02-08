@@ -8,8 +8,8 @@
 
 Applicazione desktop professionale per:
 
-1. **Download Video/Audio da YouTube**
-   - Integrazione yt-dlp (nightly builds)
+1. **Download Video/Audio da URL**
+   - Integrazione yt-dlp (tutti i siti supportati: YouTube, SoundCloud, Vimeo, ecc.)
    - Risoluzioni audio/video massime possibili
    - Progress preciso, UI non bloccante
 
@@ -27,8 +27,8 @@ Applicazione desktop professionale per:
 
 | ID | Requisito | Priorità |
 |----|-----------|----------|
-| D1 | Inserimento URL YouTube (singolo, playlist) | P0 |
-| D2 | Selezione formato: video (720p/1080p/4K/max), audio only | P0 |
+| D1 | Inserimento URL video/audio (singolo, playlist) — siti supportati da yt-dlp | P0 |
+| D2 | Selezione formato: video (max), audio (MP3, FLAC, M4A, WAV, OGG, OPUS, nativo) | P0 |
 | D3 | Scelta cartella output | P0 |
 | D4 | Progress bar con percentuale, speed, ETA | P0 |
 | D5 | Drag-and-drop URL | P1 |
@@ -40,7 +40,7 @@ Applicazione desktop professionale per:
 | ID | Requisito | Priorità |
 |----|-----------|----------|
 | C1 | Selezione file audio (multipli) | P0 |
-| C2 | Formato output: FLAC, MP3, M4A, OGG, etc. | P0 |
+| C2 | Formato output: MP3, FLAC, M4A, WAV, OGG, OPUS | P0 |
 | C3 | Qualità: lossless, 320k, 192k, etc. | P0 |
 | C4 | Preservazione metadati (tag) | P0 |
 | C5 | Progress per batch (N/M completati) | P0 |
@@ -73,14 +73,13 @@ Applicazione desktop professionale per:
 
 - **Core:** Python 3.12+
 - **GUI:** PySide6
-- **Download:** yt-dlp (nightly)
+- **Download:** yt-dlp (stable, nightly opzionale)
 - **Conversione:** FFmpeg (sistema)
 
 ---
 
 ## 5. Out of Scope (v1)
 
-- Autenticazione YouTube (login)
-- Download da altri siti oltre YouTube
+- Autenticazione (login) per contenuti privati
 - Editor metadati
 - Player integrato

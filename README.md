@@ -3,7 +3,7 @@
 [![CI](https://github.com/andreatascato-rgb/down-conv/actions/workflows/ci.yml/badge.svg)](https://github.com/andreatascato-rgb/down-conv/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Applicazione desktop professionale per **download video/audio da YouTube** e **conversione audio batch**.
+Applicazione desktop professionale per **download video/audio da URL** (YouTube, SoundCloud, Vimeo, ecc.) e **conversione audio batch**.
 
 - **Download:** yt-dlp, risoluzioni massime
 - **Conversione:** FFmpeg, preservazione metadati, lossless, multithread
@@ -27,7 +27,7 @@ Applicazione desktop professionale per **download video/audio da YouTube** e **c
 
 - Python 3.12+
 - PySide6 (GUI)
-- yt-dlp (nightly)
+- yt-dlp (stable; nightly opzionale)
 - FFmpeg (sistema)
 
 ### Setup

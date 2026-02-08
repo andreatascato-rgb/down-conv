@@ -21,6 +21,7 @@ from PySide6.QtWidgets import (
 
 from ...engines.ffmpeg_engine import check_ffmpeg_available
 from ...services.conversion_service import ConversionWorker
+from ...utils.config import get_settings
 
 
 class ConvertTab(QWidget):
@@ -29,7 +30,11 @@ class ConvertTab(QWidget):
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self._worker: ConversionWorker | None = None
-        self._output_dir = Path.home() / "Downloads"
+        s = get_settings()
+        self._output_dir = Path(s.get("output_dir_convert", str(Path.home() / "Downloads")))
+        self._default_format = s.get("convert_format", "mp3")
+        self._default_quality = s.get("convert_quality", "320k")
+        self._default_overwrite = s.get("overwrite_convert", True)
         self._setup_ui()
         self.setAcceptDrops(True)
 
@@ -89,12 +94,12 @@ class ConvertTab(QWidget):
         self._format_combo = QComboBox()
         self._format_combo.addItems(
             [
-                "MP3",  # Universale
-                "FLAC",  # Lossless
-                "M4A",  # AAC/Apple
-                "OGG",  # Vorbis
-                "WAV",  # Raw lossless
-                "OPUS",  # Efficiente
+                "MP3",
+                "FLAC",
+                "M4A",
+                "WAV",
+                "OGG",
+                "OPUS",
             ]
         )
         opt_layout.addWidget(self._format_combo)
@@ -105,6 +110,7 @@ class ConvertTab(QWidget):
         opt_layout.addWidget(self._quality_combo)
         self._format_combo.currentIndexChanged.connect(self._on_format_changed)
         layout.addLayout(opt_layout)
+        self._apply_convert_defaults()
         self._on_format_changed()  # stato iniziale
 
         from PySide6.QtWidgets import QCheckBox
@@ -115,7 +121,7 @@ class ConvertTab(QWidget):
         self._same_folder_cb.setChecked(True)
         layout.addWidget(self._same_folder_cb)
         self._overwrite_cb = QCheckBox("Sovrascrivi file esistenti")
-        self._overwrite_cb.setChecked(True)
+        self._overwrite_cb.setChecked(self._default_overwrite)
         layout.addWidget(self._overwrite_cb)
 
         layout.addWidget(self._make_separator())
@@ -169,6 +175,15 @@ class ConvertTab(QWidget):
         QWidget.setTabOrder(self._overwrite_cb, self._convert_btn)
         QWidget.setTabOrder(self._convert_btn, self._cancel_btn)
 
+    def _apply_convert_defaults(self) -> None:
+        """Applica formato, qualità e overwrite da config."""
+        fmt = self._default_format
+        if fmt in ("mp3", "flac", "m4a", "wav", "ogg", "opus"):
+            idx = ["mp3", "flac", "m4a", "wav", "ogg", "opus"].index(fmt)
+            self._format_combo.setCurrentIndex(idx)
+        if self._default_quality in ("lossless", "320k", "192k", "128k"):
+            self._quality_combo.setCurrentText(self._default_quality)
+
     def _on_format_changed(self) -> None:
         """Disabilita qualità per formati lossless (FLAC, WAV, M4A)."""
         fmt = self._format_combo.currentText().strip().lower()
@@ -208,6 +223,19 @@ class ConvertTab(QWidget):
         )
         for p in paths:
             self._list.addItem(p)
+
+    def refresh_from_config(self) -> None:
+        """Aggiorna da config (chiamato dopo Salva in Impostazioni)."""
+        s = get_settings()
+        path_str = s.get("output_dir_convert", str(Path.home() / "Downloads"))
+        self._output_dir = Path(path_str)
+        self._dir_label.setText(str(self._output_dir))
+        self._default_format = s.get("convert_format", "mp3")
+        self._default_quality = s.get("convert_quality", "320k")
+        self._default_overwrite = s.get("overwrite_convert", True)
+        self._apply_convert_defaults()
+        self._overwrite_cb.setChecked(self._default_overwrite)
+        self._on_format_changed()
 
     def _browse_output(self) -> None:
         path = QFileDialog.getExistingDirectory(self, "Cartella output", str(self._output_dir))

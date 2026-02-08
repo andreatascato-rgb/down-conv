@@ -128,16 +128,16 @@ Formato [Keep a Changelog](https://keepachangelog.com/):
 
 ---
 
-## 6. Struttura Config per Ambiente
+## 6. Struttura Config
+
+Config salvata in `platformdirs.user_config_dir("DownConv")`:
 
 ```
-config/
-  default.json      # Base
-  dev.json          # Override dev (log level DEBUG)
-  prod.json         # Override prod
+<user_config_dir>/DownConv/
+  config.json       # Output, Download, Converter (formati, qualità, sovrascrivi)
 ```
 
-Caricamento: default + merge env-specific.
+Variabili ambiente (`.env`) sovrascrivono: `DOWNCONV_ENV`, `DOWNCONV_LOG_LEVEL`, `DOWNCONV_FFMPEG_PATH`.
 
 ---
 

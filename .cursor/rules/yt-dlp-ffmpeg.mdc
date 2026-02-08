@@ -62,5 +62,5 @@ Verificare all'avvio o prima di tab Conversione.
 - Aggiungere `-y` per sovrascrivere output senza chiedere.
 
 ## Batch
-- **FFmpeg:** Multiprocessing.Pool (CPU-bound).
+- **FFmpeg:** ThreadPoolExecutor (subprocess I/O-bound, max_workers 4). Vedi DECISIONS ADR-003.
 - **yt-dlp multipli:** ThreadPoolExecutor max_workers 2-4, `run_in_executor` per evitare sovraccarico rete.

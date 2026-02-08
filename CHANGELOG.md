@@ -4,6 +4,29 @@ Tutti i cambiamenti notevoli sono documentati qui. Formato [Keep a Changelog](ht
 
 ## [Unreleased]
 
+(Nessun cambiamento)
+
+## [0.7.0] - 2026-02-09
+
+### Added
+- Download: formati FLAC, OGG (Vorbis), OPUS — allineati a Converter
+- Download: formato WAV (compatibilità DAW, dispositivi)
+
+### Changed
+- Formati: ordine e nomi unificati in Download, Converter, Impostazioni — MP3, FLAC, M4A, WAV, OGG, OPUS (stesso ordine, stesse etichette)
+- docs: ARCHITECTURE, API_DESIGN, PROJECT_SPEC, TECH_STACK, DEVELOPMENT_GUIDE allineati allo stato attuale (URL generico, formati, config, run)
+
+## [0.6.0] - 2026-02-09
+
+### Added
+- Tab Impostazioni: Output (cartelle), Download (formato default, sovrascrivi), Converter (formato, qualità, sovrascrivi)
+- Preferenze persistenti in config.json; refresh live su DownloadTab e ConvertTab al Salva
+- Download: supporto URL generico — tutti i siti yt-dlp (YouTube, SoundCloud, Vimeo, ecc.)
+
+### Changed
+- Tab etichette: "Download", "Converter", "Impostazioni"
+- docs: multiprocessing→ThreadPoolExecutor, yt-dlp stable default, config schema
+
 ## [0.5.0] - 2026-02-08
 
 ### Fixed

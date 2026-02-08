@@ -49,12 +49,14 @@ pip install --upgrade "yt-dlp[default] @ git+https://github.com/yt-dlp/yt-dlp.gi
 | `main.py` | Entry point, avvio QApplication |
 | `app.py` | Configurazione app, stili dark |
 | `gui/main_window.py` | Finestra principale, tab container |
-| `gui/tabs/download_tab.py` | UI download, connessione DownloadWorker |
-| `gui/tabs/convert_tab.py` | UI conversione, drag-drop file |
+| `gui/tabs/download_tab.py` | UI download URL, connessione DownloadWorker |
+| `gui/tabs/convert_tab.py` | UI conversione batch, drag-drop file |
+| `gui/tabs/settings_tab.py` | Impostazioni (output, formati default) |
 | `services/download_service.py` | DownloadWorker, orchestrazione yt-dlp |
 | `services/conversion_service.py` | ConversionWorker, batch FFmpeg |
 | `engines/ytdlp_engine.py` | Wrapper YoutubeDL |
 | `engines/ffmpeg_engine.py` | Wrapper FFmpeg subprocess |
+| `utils/config.py` | Config JSON, preferenze utente |
 | `utils/logging_config.py` | Setup logging |
 | `utils/paths.py` | Path app data, download, etc. |
 
@@ -63,8 +65,8 @@ pip install --upgrade "yt-dlp[default] @ git+https://github.com/yt-dlp/yt-dlp.gi
 ## 3. Esecuzione
 
 ```bash
-# Da progetto root
-python -m src.downconv.main
+# Da progetto root (Makefile, run.ps1)
+cd src && python -m downconv.main
 
 # O con PYTHONPATH
 set PYTHONPATH=%CD%\src

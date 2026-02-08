@@ -1,4 +1,4 @@
-"""DownloadWorker per download YouTube in QThread."""
+"""DownloadWorker per download video/audio da URL in QThread."""
 
 import logging
 from pathlib import Path
@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 class DownloadWorker(QThread):
-    """Worker per download YouTube. Emette progress e finished."""
+    """Worker per download video/audio da URL. Emette progress e finished."""
 
     progress = Signal(dict)
     finished = Signal(bool, str)

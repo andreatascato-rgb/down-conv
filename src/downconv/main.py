@@ -44,7 +44,7 @@ def main() -> int:
     # Check FFmpeg (avviso ma non blocca - serve per Convert tab)
     if not check_ffmpeg_available():
         msg = (
-            "FFmpeg non è nel PATH. Il download YouTube funzionerà, ma la conversione "
+            "FFmpeg non è nel PATH. Il download video/audio funzionerà, ma la conversione "
             "audio richiede FFmpeg.\nInstallalo da: https://ffmpeg.org/download.html"
         )
         QMessageBox.warning(None, "FFmpeg non trovato", msg)

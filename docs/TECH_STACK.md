@@ -35,17 +35,18 @@
 
 ### 3.1 yt-dlp
 
-- **Installazione nightly:** `pip install git+https://github.com/yt-dlp/yt-dlp.git@nightly`
+- **Default:** `yt-dlp[default]>=2024.1.0` (requirements.txt)
+- **Opzionale nightly:** `pip install "yt-dlp[default] @ git+https://github.com/yt-dlp/yt-dlp.git@master"` — utile se YouTube cambia API
 - **API:** `YoutubeDL` class, `extract_info()`, `download()`, `progress_hooks`
 - **Formati massima qualità:**
   - Video: `bestvideo+bestaudio/best` o `bestvideo[height<=4320]+bestaudio/best`
-  - Audio: `bestaudio/best` + postprocessor `FFmpegExtractAudio`
+  - Audio: `bestaudio/best` + postprocessor `FFmpegExtractAudio` (mp3, m4a, wav, opus)
 
 ### 3.2 FFmpeg
 
 - **Distribuzione:** binario di sistema (utente deve averlo in PATH)
 - **Preservazione metadati:** `-map_metadata 0`, `-movflags use_metadata_tags`
-- **Lossless:** FLAC, ALAC, codec copy quando possibile
+- **Lossless:** FLAC, WAV, ALAC, codec copy quando possibile
 - **Batch:** `subprocess.Popen` o `ffmpeg-python` (opzionale)
 
 ---
@@ -56,7 +57,7 @@
 |----------|------------|------|
 | Download singolo | QThread + Worker | progress_hooks → Signal |
 | Download multiplo | QThreadPool o sequenziale in Worker | evita sovraccarico |
-| Conversione batch | multiprocessing.Pool | FFmpeg CPU-bound, GIL bypass |
+| Conversione batch | ThreadPoolExecutor | FFmpeg via subprocess (I/O-bound), max 4 worker |
 | UI responsiveness | Qt event loop | mai bloccare main thread |
 
 ---
@@ -88,9 +89,10 @@ requirements.txt    # Pip-compatible, versioni pinned
 pyproject.toml      # Metadati progetto, build system
 ```
 
-**requirements.txt esempio:**
+**requirements.txt (vedi file root):**
 ```
 PySide6>=6.6.0
-yt-dlp @ git+https://github.com/yt-dlp/yt-dlp.git@nightly
-# FFmpeg: sistema
+yt-dlp[default]>=2024.1.0   # Nightly opzionale se YouTube rompe
+platformdirs>=4.0.0
+# FFmpeg: binario sistema
 ```

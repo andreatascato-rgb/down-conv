@@ -7,7 +7,7 @@
 ## 1. Panoramica
 
 Down&Conv è un'applicazione desktop professionale per:
-- **Download Video/Audio da YouTube** (yt-dlp, risoluzioni massime)
+- **Download Video/Audio da URL** (yt-dlp, tutti i siti supportati, risoluzioni massime)
 - **Conversione Audio Batch** (FFmpeg, metadata preservation, lossless, multithread)
 
 L'architettura segue i principi: **modularità**, **non-blocking UI**, **separazione delle responsabilità**.
@@ -19,9 +19,9 @@ L'architettura segue i principi: **modularità**, **non-blocking UI**, **separaz
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │                         GUI Layer (PySide6)                      │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐              │
-│  │ MainWindow  │  │ DownloadTab │  │ ConvertTab  │              │
-│  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘              │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌──────────┐│
+│  │ MainWindow  │  │ DownloadTab │  │ ConvertTab  │  │SettingsTab││
+│  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘  └────┬─────┘│
 │         │                │                │                       │
 │         └────────────────┼────────────────┘                      │
 │                          │ Signals/Slots                          │
@@ -32,7 +32,7 @@ L'architettura segue i principi: **modularità**, **non-blocking UI**, **separaz
 │  ┌─────────────────────┐  ┌─────────────────────┐                │
 │  │ DownloadService     │  │ ConversionService   │                │
 │  │ - QThread Worker    │  │ - QThread Worker    │                │
-│  │ - progress_hooks    │  │ - multiprocessing  │                │
+│  │ - progress_hooks    │  │ - ThreadPoolExecutor │                │
 │  └──────────┬──────────┘  └──────────┬──────────┘                │
 └─────────────┼─────────────────────────┼──────────────────────────┘
               │                         │
@@ -62,7 +62,8 @@ down&conv/
 │       │   ├── main_window.py
 │       │   └── tabs/
 │       │       ├── download_tab.py
-│       │       └── convert_tab.py
+│       │       ├── convert_tab.py
+│       │       └── settings_tab.py
 │       ├── services/
 │       │   ├── download_service.py
 │       │   └── conversion_service.py
@@ -70,6 +71,7 @@ down&conv/
 │       │   ├── ytdlp_engine.py
 │       │   └── ffmpeg_engine.py
 │       └── utils/
+│           ├── config.py
 │           ├── logging_config.py
 │           └── paths.py
 ├── tests/
@@ -82,7 +84,7 @@ down&conv/
 
 ## 4. Flussi Principali
 
-### 4.1 Download da YouTube
+### 4.1 Download da URL (yt-dlp)
 1. User inserisce URL (o drag-drop) → `DownloadTab`
 2. `DownloadTab` avvia `DownloadWorker` in `QThread`
 3. `DownloadWorker` usa `YoutubeDL` con `progress_hooks`
@@ -92,7 +94,7 @@ down&conv/
 ### 4.2 Conversione Batch
 1. User seleziona file (drag-drop) → `ConvertTab`
 2. `ConvertTab` avvia `ConversionWorker` in `QThread`
-3. Worker usa `multiprocessing.Pool` o `ThreadPoolExecutor` per batch
+3. Worker usa `ThreadPoolExecutor` per batch parallelo
 4. Ogni task FFmpeg emette progress → Signal aggregato
 5. Completato → `finished` signal → UI notifica
 
@@ -114,5 +116,5 @@ down&conv/
 
 - **Python:** 3.12+
 - **PySide6:** GUI
-- **yt-dlp:** nightly (git+https://github.com/yt-dlp/yt-dlp.git@nightly)
+- **yt-dlp:** stable (yt-dlp[default]>=2024.1.0); nightly opzionale
 - **FFmpeg:** binario di sistema (PATH)

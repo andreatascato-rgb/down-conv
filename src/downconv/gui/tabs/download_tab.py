@@ -1,4 +1,4 @@
-"""Tab Download YouTube e SoundCloud."""
+"""Tab Download video/audio da URL (yt-dlp)."""
 
 import os
 import re
@@ -25,6 +25,7 @@ from PySide6.QtWidgets import (
 
 from ...engines.ytdlp_engine import is_url_supported
 from ...services.download_service import DownloadWorker
+from ...utils.config import get_settings
 
 # Rimuove codici ANSI (colori terminale) da stringhe yt-dlp
 _ANSI_RE = re.compile(r"\x1b\[[0-9;]*m")
@@ -36,12 +37,15 @@ def _strip_ansi(text: str) -> str:
 
 
 class DownloadTab(QWidget):
-    """Tab per download da YouTube e SoundCloud. Supporta drag-drop URL."""
+    """Tab per download video/audio da URL. Supporta tutti i siti yt-dlp, drag-drop."""
 
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self._worker: DownloadWorker | None = None
-        self._output_dir = Path.home() / "Downloads"
+        s = get_settings()
+        self._output_dir = Path(s.get("output_dir_download", str(Path.home() / "Downloads")))
+        self._default_format_index = min(s.get("download_format_index", 0), 8)
+        self._default_overwrite = s.get("overwrite_download", False)
         self._setup_ui()
         self.setAcceptDrops(True)
 
@@ -54,7 +58,9 @@ class DownloadTab(QWidget):
         url_layout = QHBoxLayout()
         url_layout.addWidget(QLabel("URL:"))
         self._url_edit = QLineEdit()
-        self._url_edit.setPlaceholderText("Incolla URL YouTube o SoundCloud o trascina qui...")
+        self._url_edit.setPlaceholderText(
+            "Incolla URL video/audio (YouTube, SoundCloud, Vimeo, ecc.) o trascina qui..."
+        )
         self._url_edit.setMinimumWidth(400)
         url_layout.addWidget(self._url_edit, 1)
         self._clear_url_btn = QPushButton("\u2715")  # HEAVY BALLOT X, più visibile in molti font
@@ -92,18 +98,23 @@ class DownloadTab(QWidget):
         self._format_combo.addItems(
             [
                 "Video MP4 (max qualità)",
-                "Audio MP3 (320k)",
-                "Audio MP3 (192k)",
-                "Audio M4A (AAC)",
-                "Audio OGG (Opus)",
-                "Audio Nativo (webm/m4a)",
+                "MP3 (320k)",
+                "MP3 (192k)",
+                "FLAC",
+                "M4A",
+                "WAV",
+                "OGG",
+                "OPUS",
+                "Nativo (webm/m4a)",
             ]
         )
+        self._format_combo.setCurrentIndex(self._default_format_index)
         fmt_layout.addWidget(self._format_combo)
         layout.addLayout(fmt_layout)
 
         # Overwrite
         self._overwrite_cb = QCheckBox("Sovrascrivi file esistenti")
+        self._overwrite_cb.setChecked(self._default_overwrite)
         layout.addWidget(self._overwrite_cb)
 
         layout.addWidget(self._make_separator())
@@ -153,6 +164,17 @@ class DownloadTab(QWidget):
         QWidget.setTabOrder(self._overwrite_cb, self._download_btn)
         QWidget.setTabOrder(self._download_btn, self._cancel_btn)
 
+    def refresh_from_config(self) -> None:
+        """Aggiorna da config (chiamato dopo Salva in Impostazioni)."""
+        s = get_settings()
+        path_str = s.get("output_dir_download", str(Path.home() / "Downloads"))
+        self._output_dir = Path(path_str)
+        self._dir_label.setText(str(self._output_dir))
+        self._default_format_index = min(s.get("download_format_index", 0), 8)
+        self._default_overwrite = s.get("overwrite_download", False)
+        self._format_combo.setCurrentIndex(self._default_format_index)
+        self._overwrite_cb.setChecked(self._default_overwrite)
+
     def _browse_output(self) -> None:
         path = QFileDialog.getExistingDirectory(self, "Seleziona cartella", str(self._output_dir))
         if path:
@@ -160,7 +182,7 @@ class DownloadTab(QWidget):
             self._dir_label.setText(str(self._output_dir))
 
     def _get_format_and_postprocessors(self) -> tuple[str, list | None]:
-        """Ritorna (format_string, postprocessors)."""
+        """Ritorna (format_string, postprocessors). Stesso ordine formati di Converter."""
         idx = self._format_combo.currentIndex()
         if idx == 0:
             return "bestvideo+bestaudio/best", None
@@ -173,8 +195,14 @@ class DownloadTab(QWidget):
                 {"key": "FFmpegExtractAudio", "preferredcodec": "mp3", "preferredquality": "192"}
             ]
         if idx == 3:
-            return "bestaudio/best", [{"key": "FFmpegExtractAudio", "preferredcodec": "m4a"}]
+            return "bestaudio/best", [{"key": "FFmpegExtractAudio", "preferredcodec": "flac"}]
         if idx == 4:
+            return "bestaudio/best", [{"key": "FFmpegExtractAudio", "preferredcodec": "m4a"}]
+        if idx == 5:
+            return "bestaudio/best", [{"key": "FFmpegExtractAudio", "preferredcodec": "wav"}]
+        if idx == 6:
+            return "bestaudio/best", [{"key": "FFmpegExtractAudio", "preferredcodec": "vorbis"}]
+        if idx == 7:
             return "bestaudio/best", [{"key": "FFmpegExtractAudio", "preferredcodec": "opus"}]
         return "bestaudio/best", None
 
@@ -188,15 +216,15 @@ class DownloadTab(QWidget):
                 QMessageBox.warning(
                     self,
                     "Attenzione",
-                    "URL non supportato. Verifica che sia un link YouTube o SoundCloud valido.",
+                    "URL non supportato. Verifica il link (YouTube, SoundCloud, Vimeo, ecc.).",
                 )
                 return
         except Exception as e:
-            QMessageBox.critical(
-                self,
-                "Errore",
-                f"Verifica URL fallita: {e}\nProva con un link YouTube o SoundCloud valido.",
+            err_msg = (
+                f"Verifica URL fallita: {e}\n"
+                "Prova con un link valido (YouTube, SoundCloud, Vimeo, ecc.)."
             )
+            QMessageBox.critical(self, "Errore", err_msg)
             return
 
         self._download_btn.setEnabled(False)
@@ -312,7 +340,7 @@ class DownloadTab(QWidget):
             if path:
                 continue
             url_str = url.toString()
-            if any(x in url_str for x in ("youtube", "youtu.be", "soundcloud")):
+            if url_str.startswith(("http://", "https://")):
                 self._url_edit.setText(url_str)
                 break
         event.acceptProposedAction()

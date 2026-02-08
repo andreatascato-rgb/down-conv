@@ -48,11 +48,11 @@
 
 **Data:** Feb 2026
 
-**Decisione:** Nightly (o master) per compatibilità YouTube
+**Decisione:** Stable di default; nightly opzionale per compatibilità YouTube
 
-**Contesto:** YouTube cambia spesso. Release stable possono essere obsolete.
+**Contesto:** YouTube cambia spesso. requirements.txt usa stable (`yt-dlp[default]>=2024.1.0`). Se YouTube rompe: `pip install "yt-dlp[default] @ git+https://github.com/yt-dlp/yt-dlp.git@master"`.
 
-**Conseguenze:** Aggiornamenti più frequenti, possibile instabilità. Mitigazione: test regolari.
+**Conseguenze:** Stabilità default. Nightly come fallback manuale.
 
 ---
 

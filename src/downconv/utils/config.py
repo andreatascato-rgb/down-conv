@@ -6,6 +6,18 @@ from pathlib import Path
 
 from .paths import get_config_file
 
+# Schema impostazioni con default (estensibile per Fase 2, 3)
+DEFAULT_SETTINGS = {
+    "output_dir_download": str(Path.home() / "Downloads"),
+    "output_dir_convert": str(Path.home() / "Downloads"),
+    # Fase 2
+    "convert_format": "mp3",
+    "convert_quality": "320k",
+    "overwrite_convert": True,
+    "overwrite_download": False,
+    "download_format_index": 0,  # 0=Video, 1-2=MP3, 3=FLAC, 4=M4A, 5=WAV, 6=OGG, 7=OPUS, 8=Nativo
+}
+
 
 def load_env_file() -> None:
     """Carica .env dal progetto root se esiste."""
@@ -38,6 +50,25 @@ def load_config() -> dict:
         except (json.JSONDecodeError, OSError):
             pass
     return {}
+
+
+def get_settings() -> dict:
+    """Impostazioni con merge su default. Per Fase 1+: output_dir_download, output_dir_convert."""
+    current = load_config()
+    out = dict(DEFAULT_SETTINGS)
+    for k in DEFAULT_SETTINGS:
+        if k in current:
+            out[k] = current[k]
+    return out
+
+
+def save_settings(updates: dict) -> bool:
+    """Salva solo le chiavi in updates (merge con config esistente)."""
+    current = load_config()
+    for k, v in updates.items():
+        if k in DEFAULT_SETTINGS:
+            current[k] = v
+    return save_config(current)
 
 
 def save_config(config: dict) -> bool:

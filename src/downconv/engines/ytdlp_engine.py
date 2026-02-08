@@ -1,4 +1,4 @@
-"""Engine yt-dlp per download YouTube."""
+"""Engine yt-dlp per download video/audio da URL supportati."""
 
 import logging
 import shutil
@@ -36,7 +36,7 @@ def _get_user_message(exc: Exception) -> str:
 
 
 class YtdlpEngine:
-    """Wrapper yt-dlp per download YouTube. Thread-safe."""
+    """Wrapper yt-dlp per download video/audio. Thread-safe."""
 
     def __init__(self, overwrite: bool = False) -> None:
         self.overwrite = overwrite

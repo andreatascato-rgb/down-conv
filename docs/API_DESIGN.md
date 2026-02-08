@@ -10,7 +10,7 @@
 
 ```python
 class YtdlpEngine:
-    """Wrapper yt-dlp per download YouTube. Thread-safe."""
+    """Wrapper yt-dlp per download video/audio. Thread-safe."""
     
     def extract_info(self, url: str, download: bool = False) -> dict | None:
         """Estrae metadata senza download. Ritorna None su errore."""
@@ -21,8 +21,8 @@ class YtdlpEngine:
         output_dir: Path,
         format: str = "bestvideo+bestaudio/best",
         progress_callback: Callable[[dict], None] | None = None,
-    ) -> bool:
-        """Download. progress_callback riceve dict con status, downloaded_bytes, total_bytes, _percent_str, _speed_str, _eta_str."""
+    ) -> tuple[bool, str]:
+        """Download. Ritorna (success, error_message). progress_callback riceve dict con status, downloaded_bytes, total_bytes, _percent_str, _speed_str, _eta_str."""
 ```
 
 ### Progress Hook Dict (yt-dlp)
@@ -53,7 +53,7 @@ class FfmpegEngine:
         self,
         input_path: Path,
         output_path: Path,
-        output_format: str,  # "flac", "mp3", "m4a", etc.
+        output_format: str,  # "mp3", "flac", "m4a", "wav", "ogg", "opus"
         quality: str = "lossless",  # "lossless" | "192k" | "320k"
         progress_callback: Callable[[float], None] | None = None,
     ) -> bool:
@@ -103,7 +103,7 @@ class ConversionWorker(QThread):
     finished = Signal(bool, str)      # success, error_message
     
     def run(self):
-        """Eseguito in QThread. Usa multiprocessing internamente. Controlla isInterruptionRequested() tra file."""
+        """Eseguito in QThread. Usa ThreadPoolExecutor per batch FFmpeg. Controlla isInterruptionRequested() tra file."""
 ```
 
 ---

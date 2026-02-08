@@ -1,6 +1,6 @@
 # Down&Conv - Stato Progetto
 
-**Ultimo aggiornamento:** 2026-02-08
+**Ultimo aggiornamento:** 2026-02-09
 
 ---
 
@@ -23,6 +23,9 @@
 - [x] GUI (MainWindow, DownloadTab, ConvertTab)
 - [x] Dark theme, drag-drop, progress
 - [x] Refinement UI: pulsante Svuota URL, icona app (finestra + taskbar), manina su widget, fix QSS cursor
+- [x] Download: supporto URL generico (tutti i siti yt-dlp: YouTube, SoundCloud, Vimeo, ecc.)
+- [x] Tab Impostazioni completa: Output, Download (formato), Converter (formato, qualità), sovrascrivi — persistente in config.json
+- [x] Release 0.7.0: formati FLAC, OGG, OPUS, WAV in Download; formati unificati in tutti i tab; docs allineati
 
 ---
 
