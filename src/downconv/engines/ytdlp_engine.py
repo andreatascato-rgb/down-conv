@@ -73,6 +73,7 @@ class YtdlpEngine:
         opts: dict = {
             "outtmpl": outtmpl,
             "format": format,
+            "merge_output_format": "mp4",  # Forza MP4 quando merge video+audio
             "noplaylist": True,  # Scarica solo il singolo video, non la playlist
             "quiet": True,
             "no_warnings": True,

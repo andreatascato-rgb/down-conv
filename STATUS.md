@@ -6,7 +6,7 @@
 
 ## In Progress
 
-- [ ] Test completi
+- [ ] Test completi (engines coperti, services/tabs opzionali)
 
 ---
 

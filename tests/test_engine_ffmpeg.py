@@ -36,7 +36,7 @@ def test_convert_batch_empty_returns_empty() -> None:
 
 @pytest.mark.skipif(not __import__("shutil").which("ffmpeg"), reason="FFmpeg non in PATH")
 def test_convert_batch_nonexistent_fails() -> None:
-    """convert_batch con file inesistente ritorna (path, False)."""
+    """convert_batch con file inesistente ritorna (path, False, error_msg)."""
     import tempfile
 
     engine = FfmpegEngine()
@@ -50,3 +50,4 @@ def test_convert_batch_nonexistent_fails() -> None:
         assert len(result) == 1
         assert result[0][0] == Path("/nonexistent/input.flac")
         assert result[0][1] is False
+        assert isinstance(result[0][2], str)

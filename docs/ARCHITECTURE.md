@@ -60,17 +60,15 @@ down&conv/
 │       ├── app.py          # QApplication setup
 │       ├── gui/
 │       │   ├── main_window.py
-│       │   ├── tabs/
-│       │   │   ├── download_tab.py
-│       │   │   └── convert_tab.py
-│       │   └── widgets/
+│       │   └── tabs/
+│       │       ├── download_tab.py
+│       │       └── convert_tab.py
 │       ├── services/
 │       │   ├── download_service.py
 │       │   └── conversion_service.py
 │       ├── engines/
 │       │   ├── ytdlp_engine.py
 │       │   └── ffmpeg_engine.py
-│       ├── models/
 │       └── utils/
 │           ├── logging_config.py
 │           └── paths.py

@@ -56,8 +56,23 @@ class ConversionWorker(QThread):
             output_dirs=output_dirs,
             stop_check=lambda: self.isInterruptionRequested(),
         )
-        failed = [p for p, ok in results if not ok]
+        failed = [(p, err) for p, ok, err in results if not ok]
         if failed:
-            self.finished.emit(False, f"Errori su {len(failed)} file")
+            msg = self._format_error_msg(failed)
+            self.finished.emit(False, msg)
         else:
             self.finished.emit(True, "")
+
+    def _format_error_msg(self, failed: list[tuple[Path, str]]) -> str:
+        """Costruisce messaggio errore con file e cause."""
+        n = len(failed)
+        if n == 1:
+            p, err = failed[0]
+            return f"{p.name}: {err}"
+        lines = [f"Errori su {n} file:"]
+        max_show = 5
+        for p, err in failed[:max_show]:
+            lines.append(f"  • {p.name}: {err}")
+        if n > max_show:
+            lines.append(f"  ... e altri {n - max_show} file")
+        return "\n".join(lines)

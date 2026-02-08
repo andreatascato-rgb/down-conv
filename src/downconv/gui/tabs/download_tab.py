@@ -1,6 +1,7 @@
-"""Tab Download YouTube."""
+"""Tab Download YouTube e SoundCloud."""
 
 import os
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -11,6 +12,7 @@ from PySide6.QtWidgets import (
     QCheckBox,
     QComboBox,
     QFileDialog,
+    QFrame,
     QHBoxLayout,
     QLabel,
     QLineEdit,
@@ -24,9 +26,17 @@ from PySide6.QtWidgets import (
 from ...engines.ytdlp_engine import is_url_supported
 from ...services.download_service import DownloadWorker
 
+# Rimuove codici ANSI (colori terminale) da stringhe yt-dlp
+_ANSI_RE = re.compile(r"\x1b\[[0-9;]*m")
+
+
+def _strip_ansi(text: str) -> str:
+    """Rimuove codici ANSI escape per display in GUI."""
+    return _ANSI_RE.sub("", text).strip()
+
 
 class DownloadTab(QWidget):
-    """Tab per download da YouTube. Supporta drag-drop URL."""
+    """Tab per download da YouTube e SoundCloud. Supporta drag-drop URL."""
 
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
@@ -44,7 +54,7 @@ class DownloadTab(QWidget):
         url_layout = QHBoxLayout()
         url_layout.addWidget(QLabel("URL:"))
         self._url_edit = QLineEdit()
-        self._url_edit.setPlaceholderText("Incolla URL YouTube o trascina qui...")
+        self._url_edit.setPlaceholderText("Incolla URL YouTube o SoundCloud o trascina qui...")
         self._url_edit.setMinimumWidth(400)
         url_layout.addWidget(self._url_edit, 1)
         self._clear_url_btn = QPushButton("\u2715")  # HEAVY BALLOT X, più visibile in molti font
@@ -52,9 +62,7 @@ class DownloadTab(QWidget):
         self._clear_url_btn.setFont(
             QFont(self._clear_url_btn.font().family(), 16, QFont.Weight.Bold)
         )
-        self._clear_url_btn.setStyleSheet(
-            "color: white; padding: 0;"
-        )  # forza testo bianco visibile
+        self._clear_url_btn.setObjectName("iconButton")
         self._clear_url_btn.setToolTip("Svuota URL")
         self._clear_url_btn.clicked.connect(lambda: self._url_edit.clear())
         self._clear_url_btn.setVisible(False)
@@ -68,12 +76,14 @@ class DownloadTab(QWidget):
         dir_layout = QHBoxLayout()
         dir_layout.addWidget(QLabel("Cartella:"))
         self._dir_label = QLabel(str(self._output_dir))
-        self._dir_label.setStyleSheet("color: #8c8c8c;")
+        self._dir_label.setObjectName("secondaryText")
         dir_layout.addWidget(self._dir_label, 1)
         self._browse_btn = QPushButton("Sfoglia...")
         self._browse_btn.clicked.connect(self._browse_output)
         dir_layout.addWidget(self._browse_btn)
         layout.addLayout(dir_layout)
+
+        layout.addWidget(self._make_separator())
 
         # Formato
         fmt_layout = QHBoxLayout()
@@ -81,7 +91,7 @@ class DownloadTab(QWidget):
         self._format_combo = QComboBox()
         self._format_combo.addItems(
             [
-                "Video (max qualità)",
+                "Video MP4 (max qualità)",
                 "Audio MP3 (320k)",
                 "Audio MP3 (192k)",
                 "Audio M4A (AAC)",
@@ -96,6 +106,8 @@ class DownloadTab(QWidget):
         self._overwrite_cb = QCheckBox("Sovrascrivi file esistenti")
         layout.addWidget(self._overwrite_cb)
 
+        layout.addWidget(self._make_separator())
+
         # Progress
         self._progress_bar = QProgressBar()
         self._progress_bar.setRange(0, 100)
@@ -104,8 +116,10 @@ class DownloadTab(QWidget):
         layout.addWidget(self._progress_bar)
 
         self._status_label = QLabel("")
-        self._status_label.setStyleSheet("color: #8c8c8c;")
+        self._status_label.setObjectName("secondaryText")
         layout.addWidget(self._status_label)
+
+        layout.addWidget(self._make_separator())
 
         # Download
         self._download_btn = QPushButton("Scarica")
@@ -119,6 +133,25 @@ class DownloadTab(QWidget):
         layout.addLayout(btn_layout)
 
         layout.addStretch()
+        self._setup_tab_order()
+
+    def _make_separator(self) -> QFrame:
+        """Linea separatore tra sezioni."""
+        sep = QFrame()
+        sep.setFrameShape(QFrame.Shape.HLine)
+        sep.setFrameShadow(QFrame.Shadow.Sunken)
+        sep.setObjectName("sectionSeparator")
+        sep.setFixedHeight(4)
+        return sep
+
+    def _setup_tab_order(self) -> None:
+        """Tab order per accessibilità."""
+        QWidget.setTabOrder(self._url_edit, self._clear_url_btn)
+        QWidget.setTabOrder(self._clear_url_btn, self._browse_btn)
+        QWidget.setTabOrder(self._browse_btn, self._format_combo)
+        QWidget.setTabOrder(self._format_combo, self._overwrite_cb)
+        QWidget.setTabOrder(self._overwrite_cb, self._download_btn)
+        QWidget.setTabOrder(self._download_btn, self._cancel_btn)
 
     def _browse_output(self) -> None:
         path = QFileDialog.getExistingDirectory(self, "Seleziona cartella", str(self._output_dir))
@@ -155,12 +188,14 @@ class DownloadTab(QWidget):
                 QMessageBox.warning(
                     self,
                     "Attenzione",
-                    "URL non supportato. Verifica che sia un link YouTube valido.",
+                    "URL non supportato. Verifica che sia un link YouTube o SoundCloud valido.",
                 )
                 return
         except Exception as e:
             QMessageBox.critical(
-                self, "Errore", f"Verifica URL fallita: {e}\nProva con un link YouTube valido."
+                self,
+                "Errore",
+                f"Verifica URL fallita: {e}\nProva con un link YouTube o SoundCloud valido.",
             )
             return
 
@@ -189,15 +224,25 @@ class DownloadTab(QWidget):
             self._progress_bar.setRange(0, 100)  # Passa da indeterminato a normale
             total = data.get("total_bytes") or 0
             downloaded = data.get("downloaded_bytes") or 0
+            pct = 0
             if total and total > 0:
                 pct = int(100 * downloaded / total)
-                self._progress_bar.setValue(min(pct, 100))
-            speed = data.get("_speed_str", "")
-            eta = data.get("_eta_str", "")
-            self._status_label.setText(f"{speed} - ETA: {eta}")
+            else:
+                # Fallback: yt-dlp fornisce _percent_str quando total è sconosciuto (HLS, stream)
+                pct_str = _strip_ansi(data.get("_percent_str", "") or "")
+                if pct_str and pct_str != "N/A":
+                    match = re.search(r"([\d.]+)\s*%", pct_str)
+                    if match:
+                        pct = min(99, int(float(match.group(1))))
+            self._progress_bar.setValue(min(pct, 100))
+            speed = _strip_ansi(data.get("_speed_str", "") or "")
+            eta = _strip_ansi(data.get("_eta_str", "") or "")
+            text = f"{speed} - ETA: {eta}" if speed or eta else "Download in corso..."
+            self._status_label.setText(text)
         elif status == "finished":
-            self._progress_bar.setValue(100)
-            self._status_label.setText("Completato!")
+            # "finished" = singolo frammento (video o audio), non il download completo
+            # Non impostare 100%: l'altro frammento potrebbe ancora scaricare, o FFmpeg sta mergando
+            self._status_label.setText("Elaborazione...")
 
     @Slot(bool, str)
     def _on_finished(self, success: bool, msg: str) -> None:
@@ -205,6 +250,8 @@ class DownloadTab(QWidget):
         self._cancel_btn.setEnabled(False)
         self._worker = None
         if success:
+            self._progress_bar.setRange(0, 100)
+            self._progress_bar.setValue(100)
             self._status_label.setText("Download completato.")
             box = QMessageBox(self)
             box.setIcon(QMessageBox.Icon.Information)
@@ -216,6 +263,8 @@ class DownloadTab(QWidget):
             if box.clickedButton() == open_btn:
                 self._open_folder(self._output_dir)
         else:
+            self._progress_bar.setRange(0, 100)
+            self._progress_bar.setValue(0)
             self._status_label.setText(f"Errore: {msg}")
             QMessageBox.critical(self, "Errore", msg)
 
@@ -234,21 +283,36 @@ class DownloadTab(QWidget):
             self._worker.requestInterruption()
             self._cancel_btn.setEnabled(False)
 
+    def _set_drag_highlight(self, on: bool) -> None:
+        """Feedback visivo durante drag-drop."""
+        if on:
+            self._url_edit.setStyleSheet(
+                "border: 2px solid #0d7377; border-radius: 6px; "
+                "background-color: #252526; color: #d4d4d4;"
+            )
+        else:
+            self._url_edit.setStyleSheet("")
+
     def dragEnterEvent(self, event) -> None:
         if event.mimeData().hasUrls():
             event.acceptProposedAction()
+            self._set_drag_highlight(True)
 
     def dragMoveEvent(self, event) -> None:
         if event.mimeData().hasUrls():
             event.acceptProposedAction()
 
+    def dragLeaveEvent(self, event) -> None:
+        self._set_drag_highlight(False)
+
     def dropEvent(self, event) -> None:
+        self._set_drag_highlight(False)
         for url in event.mimeData().urls():
             path = url.toLocalFile()
             if path:
                 continue
             url_str = url.toString()
-            if "youtube" in url_str or "youtu.be" in url_str:
+            if any(x in url_str for x in ("youtube", "youtu.be", "soundcloud")):
                 self._url_edit.setText(url_str)
                 break
         event.acceptProposedAction()

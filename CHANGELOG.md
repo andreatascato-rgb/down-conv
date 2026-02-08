@@ -4,8 +4,41 @@ Tutti i cambiamenti notevoli sono documentati qui. Formato [Keep a Changelog](ht
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-02-08
+
+### Fixed
+- Lint: E501 (linee lunghe), E402 (import non in cima) in download_tab e ffmpeg_engine
+- Convert: "Invalid loglevel" — sostituzione errata cmd[3:5] corrette in cmd[3]="info"
+- Download: barra progresso continua usando _percent_str di yt-dlp quando total_bytes non disponibile (HLS, stream)
+- Convert: singolo file mostra progresso reale (ffprobe + parse time= FFmpeg) come Download; multi-file 0-100%
+
+### Changed
+- docs/ARCHITECTURE.md: allineata struttura directory (rimossi models/, widgets/)
+- Dialog conferma Convert: standardizzato come Download, rimosso testo superfluo
+- ConvertTab: Rimuovi e Svuota colorati solo quando ci sono file (grigi di default)
+- Download tab: UI impostata per YouTube e SoundCloud (placeholder, messaggi, drag-drop, etichetta tab)
+- ConvertTab: rimosso pulsante "Apri cartella" (ridondante con dialog post-conversione)
+- docs/DECISIONS.md ADR-003: ThreadPoolExecutor invece di multiprocessing (allineato al codice)
+
 ### Added
 - Setup GitHub: CI (GitHub Actions), LICENSE MIT, CONTRIBUTING.md
+- ConvertTab: pulsante "Rimuovi" per eliminare singolo file dalla lista
+
+### Changed
+- Dialog errore conversione: ora mostra file falliti e messaggio FFmpeg (es. "file.mp4: Invalid data")
+- ConvertTab: qualità disabilitata per FLAC/WAV/M4A (lossless); OGG e OPUS ora usano la qualità selezionata
+- Download: label "Video MP4" (max qualità) + merge_output_format mp4 forzato
+- Download: rimossi codici ANSI da velocità/ETA (niente più [0;32m ecc., solo "1.19MiB/s - ETA: 00:01")
+- Download: progress "finished" non più trattato come completamento — 100% e "file salvato" solo quando worker finisce
+- UI: stati QSS :pressed e :focus per pulsanti, input, combo, tab (feedback visivo 2026)
+- UI: font stack globale (Segoe UI, SF Pro, Helvetica Neue, 10pt)
+- UI: QMessageBox e QDialog con stile dark
+- UI: stili inline sostituiti da classi QSS (secondaryText, iconButton)
+- UI: QListWidget item hover/selected, QComboBox dropdown dark
+- UI: feedback visivo durante drag-drop (bordo teal sull'area di drop)
+- UI: TabOrder per accessibilità tastiera (ordine logico nei tab)
+- UI: separatori visivi tra sezioni (Input, Opzioni, Progress, Azioni)
+- UI ConvertTab: layout come Download (File: box + pulsanti sotto, pulito)
 
 ## [0.4.5] - 2026-02-08
 

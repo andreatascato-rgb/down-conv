@@ -24,7 +24,7 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(central)
 
         tabs = QTabWidget()
-        tabs.addTab(DownloadTab(), "Download YouTube")
+        tabs.addTab(DownloadTab(), "Download YouTube / SoundCloud")
         tabs.addTab(ConvertTab(), "Conversione Audio")
 
         from PySide6.QtWidgets import QVBoxLayout

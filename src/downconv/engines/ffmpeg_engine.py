@@ -2,6 +2,7 @@
 
 import logging
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -13,6 +14,9 @@ from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
+# Regex per time=HH:MM:SS.ms nell'output FFmpeg
+_TIME_RE = re.compile(r"time=(\d{2}):(\d{2}):(\d{2})\.(\d{2})")
+
 # Timeout per singola conversione (evita hang FFmpeg su file corrotti/problema)
 CONVERT_TIMEOUT_SEC = 600  # 10 min
 
@@ -20,6 +24,99 @@ CONVERT_TIMEOUT_SEC = 600  # 10 min
 def check_ffmpeg_available() -> bool:
     """Verifica se FFmpeg è disponibile in PATH."""
     return shutil.which("ffmpeg") is not None
+
+
+def _get_duration_seconds(input_path: Path, ffprobe_path: str | None = None) -> float | None:
+    """Ottiene durata in secondi via ffprobe. Ritorna None se fallisce."""
+    ffprobe = ffprobe_path or shutil.which("ffprobe") or "ffprobe"
+    cmd = [
+        ffprobe,
+        "-v",
+        "error",
+        "-show_entries",
+        "format=duration",
+        "-of",
+        "default=noprint_wrappers=1:nokey=1",
+        str(input_path),
+    ]
+    creationflags = subprocess.CREATE_NO_WINDOW if sys.platform == "win32" else 0
+    try:
+        result = subprocess.run(
+            cmd,
+            capture_output=True,
+            text=True,
+            timeout=10,
+            creationflags=creationflags,
+        )
+        if result.returncode == 0 and result.stdout.strip():
+            return float(result.stdout.strip())
+    except (subprocess.TimeoutExpired, ValueError, FileNotFoundError):
+        pass
+    return None
+
+
+def _parse_time_to_seconds(match: re.Match) -> float:
+    """Converte match time=HH:MM:SS.cs in secondi."""
+    h, m, s, cs = (int(x) for x in match.groups())
+    return h * 3600 + m * 60 + s + cs / 100.0
+
+
+def _run_convert_with_progress(
+    cmd: list,
+    input_path: Path,
+    output_path: Path,
+    final_output: Path,
+    progress_callback: Callable[[float], None],
+    creationflags: int,
+) -> tuple[bool, str]:
+    """Esegue FFmpeg con Popen, parsando stderr per progress e chiamando callback."""
+    duration = _get_duration_seconds(input_path)
+    last_pct = -1
+
+    proc = subprocess.Popen(
+        cmd,
+        stderr=subprocess.PIPE,
+        text=True,
+        creationflags=creationflags,
+    )
+    stderr_chunks = []
+    try:
+        if proc.stderr:
+            for line in proc.stderr:
+                stderr_chunks.append(line)
+                if duration and duration > 0:
+                    match = _TIME_RE.search(line)
+                    if match:
+                        current = _parse_time_to_seconds(match)
+                        pct = min(99, int(100 * current / duration))
+                        if pct > last_pct and pct - last_pct >= 2:  # Throttle ogni ~2%
+                            last_pct = pct
+                            progress_callback(float(pct))
+        proc.wait(timeout=CONVERT_TIMEOUT_SEC)
+    except subprocess.TimeoutExpired:
+        proc.kill()
+        proc.wait()
+        if output_path != final_output and output_path.exists():
+            output_path.unlink(missing_ok=True)
+        mins = CONVERT_TIMEOUT_SEC // 60
+        return False, f"Timeout: file troppo lungo (oltre {mins} min)"
+    except Exception as e:
+        proc.kill()
+        proc.wait()
+        if output_path != final_output and output_path.exists():
+            output_path.unlink(missing_ok=True)
+        logger.exception("Conversione con progress fallita: %s", e)
+        return False, str(e)
+
+    stderr_text = "".join(stderr_chunks)
+    if proc.returncode != 0:
+        if output_path != final_output and output_path.exists():
+            output_path.unlink(missing_ok=True)
+        return False, _parse_ffmpeg_error(stderr_text)
+    if output_path != final_output:
+        os.replace(output_path, final_output)
+    progress_callback(100.0)
+    return True, ""
 
 
 def _parse_ffmpeg_error(stderr: str) -> str:
@@ -87,10 +184,19 @@ class FfmpegEngine:
             cmd.extend(["-c:a", "alac", "-movflags", "use_metadata_tags"])
         elif fmt == "ogg":
             cmd.extend(["-c:a", "libvorbis"])
+            # Vorbis: -q:a 0-10 (~45-500k). Mappiamo: lossless→9, 320k→10, 192k→8, 128k→6
+            q_map = {"lossless": "9", "320k": "10", "192k": "8", "128k": "6"}
+            cmd.extend(["-q:a", q_map.get(quality, "8")])
         elif fmt == "wav":
             cmd.extend(["-c:a", "pcm_s16le"])
         elif fmt == "opus":
             cmd.extend(["-c:a", "libopus"])
+            # Opus: -b:a bitrate. Mappiamo quality come MP3
+            if quality in ("lossless", "320k"):
+                br = "320k"
+            else:
+                br = quality if quality.endswith("k") else "192k"
+            cmd.extend(["-b:a", br])
         else:
             cmd.extend(["-c:a", "copy"])
 
@@ -116,6 +222,11 @@ class FfmpegEngine:
             out_str = str(output_path)
         cmd.append(out_str)
 
+        # Con progress_callback: usa -loglevel info per parsare time= su stderr
+        use_progress = progress_callback is not None
+        if use_progress:
+            cmd[3] = "info"  # cmd[2]=-loglevel, cmd[3]=error → info
+
         # Stesso file input/output (es. MP3→MP3 stessa cartella): temp + rename atomico
         final_output = output_path
         if output_path.resolve() == input_path.resolve():
@@ -131,6 +242,16 @@ class FfmpegEngine:
 
         creationflags = subprocess.CREATE_NO_WINDOW if sys.platform == "win32" else 0
         try:
+            if use_progress:
+                ok, err_msg = _run_convert_with_progress(
+                    cmd,
+                    input_path,
+                    output_path,
+                    final_output,
+                    progress_callback,
+                    creationflags,
+                )
+                return ok, err_msg
             result = subprocess.run(
                 cmd,
                 capture_output=True,
@@ -181,8 +302,8 @@ class FfmpegEngine:
         overwrite: bool = True,
         output_dirs: list[Path] | None = None,
         stop_check: Callable[[], bool] | None = None,
-    ) -> list[tuple[Path, bool]]:
-        """Batch parallelo con ThreadPoolExecutor. FFmpeg in subprocess rilascia GIL."""
+    ) -> list[tuple[Path, bool, str]]:
+        """Batch parallelo con ThreadPoolExecutor. Ritorna (path, ok, error_msg)."""
         if not files:
             return []
 
@@ -200,13 +321,25 @@ class FfmpegEngine:
             out_path = out_dir / f"{stem}.{output_format}"
             tasks.append((inp, out_path))
 
-        results: list[tuple[Path, bool]] = []
+        results: list[tuple[Path, bool, str]] = []
         completed_lock = threading.Lock()
         completed_count = 0
 
-        def _convert_task(inp: Path, out_path: Path) -> tuple[Path, bool]:
-            ok, _ = self.convert(inp, out_path, output_format, quality, overwrite=overwrite)
-            return (inp, ok)
+        def _single_file_progress(pct: float) -> None:
+            if progress_callback:
+                progress_callback(int(pct), 100, files[0])
+
+        def _convert_task(inp: Path, out_path: Path) -> tuple[Path, bool, str]:
+            pcb = _single_file_progress if total == 1 else None
+            ok, err_msg = self.convert(
+                inp,
+                out_path,
+                output_format,
+                quality,
+                progress_callback=pcb,
+                overwrite=overwrite,
+            )
+            return (inp, ok, err_msg or "")
 
         def _on_done(inp: Path, ok: bool) -> None:
             nonlocal completed_count
@@ -228,12 +361,12 @@ class FfmpegEngine:
             for fut in as_completed(futures):
                 inp = futures[fut]
                 try:
-                    inp, ok = fut.result()
-                    results.append((inp, ok))
+                    inp, ok, err_msg = fut.result()
+                    results.append((inp, ok, err_msg))
                     _on_done(inp, ok)
                 except Exception as e:
                     logger.exception("Errore conversione %s: %s", inp, e)
-                    results.append((inp, False))
+                    results.append((inp, False, str(e)))
                     _on_done(inp, False)
 
         return results

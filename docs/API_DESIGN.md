@@ -69,8 +69,8 @@ class FfmpegEngine:
         progress_callback: Callable[[int, int, Path], None] | None = None,
         output_dirs: list[Path] | None = None,
         stop_check: Callable[[], bool] | None = None,
-    ) -> list[tuple[Path, bool]]:
-        """Batch parallelo (ThreadPoolExecutor). output_dirs per stesso-folder, stop_check per cancel."""
+    ) -> list[tuple[Path, bool, str]]:
+        """Batch parallelo. Ritorna (path, ok, error_msg). output_dirs per stesso-folder, stop_check per cancel."""
 ```
 
 ### Metadata Preservation

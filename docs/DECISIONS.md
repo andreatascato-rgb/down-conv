@@ -32,15 +32,15 @@
 
 ---
 
-## ADR-003: multiprocessing per batch FFmpeg
+## ADR-003: ThreadPoolExecutor per batch FFmpeg
 
 **Data:** Feb 2026
 
-**Decisione:** multiprocessing.Pool per conversione batch
+**Decisione:** ThreadPoolExecutor per conversione batch
 
-**Contesto:** FFmpeg è CPU-bound. GIL limiterebbe ThreadPool.
+**Contesto:** FFmpeg è eseguito via subprocess; ogni worker è I/O-bound rispetto al GIL (aspetta subprocess). ThreadPool evita overhead multiprocessing e semplifica la condivisione dello stato.
 
-**Conseguenze:** Parallelismo reale. Attenzione a non eccedere core CPU.
+**Conseguenze:** Parallelismo efficace (max 4 worker). Controllo `isInterruptionRequested()` tra file per cancellazione.
 
 ---
 
