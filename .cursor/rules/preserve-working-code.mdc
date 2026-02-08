@@ -1,0 +1,33 @@
+---
+description: Non modificare codice funzionante senza richiesta esplicita dell'utente
+alwaysApply: true
+---
+
+# Preservare Codice Funzionante
+
+## Principio
+
+Il codice che **funziona** e che l'utente ha approvato è **stabile**. Non va toccato a meno che l'utente non lo richieda esplicitamente.
+
+## Regole
+
+1. **Nessun refactoring non richiesto** — Non "migliorare", "pulire" o "ottimizzare" codice che funziona bene.
+2. **Modifiche additive** — Preferire aggiungere file/moduli/codice nuovo piuttosto che riscrivere l'esistente.
+3. **Scope preciso** — Se la richiesta riguarda X, modificare solo X. Non estendere a Y o Z.
+4. **Codice stabile** — Engines, Services, GUI tabs, flussi principali: sono implementati. Non cambiarne la struttura senza richiesta esplicita.
+5. **Esplicito = sì** — Solo se l'utente dice "refactora", "migliora", "cambia", "sostituisci" procedere con modifiche più invasive.
+
+## Esempi
+
+| Richiesta utente | Azione corretta |
+|------------------|-----------------|
+| "Aggiungi download sottotitoli" | Estendi `DownloadTab` / `YtdlpEngine` senza riscrivere download esistente |
+| "Fix progress bar" | Modifica solo la parte che causa il bug |
+| "Cambia colori tema" | Modifica solo DARK_QSS / stili |
+| (nessuna richiesta di refactor) | NON riscrivere classi, NON cambiare pattern architetturali |
+
+## Eccezioni
+
+- Fix bug: modificare solo ciò che serve per correggere.
+- Regole di progetto: seguire sempre project-core, dev-workflow, etc.
+- Sicurezza o corruzione dati: intervenire anche se non esplicitamente richiesto.

@@ -6,6 +6,8 @@ Tutti i cambiamenti notevoli sono documentati qui. Formato [Keep a Changelog](ht
 
 ### Added
 - Setup GitHub: CI (GitHub Actions), LICENSE MIT, CONTRIBUTING.md
+- Regola preserve-working-code: protezione codice funzionante da modifiche non richieste
+- Pulsante "Svuota URL" accanto al campo URL nel tab Download (visibile solo se il campo contiene testo)
 
 ## [0.2.0] - 2026-02-08
 

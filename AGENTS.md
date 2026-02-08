@@ -33,6 +33,7 @@ Agisci come **Team di Sviluppo Software d'Elite**:
 Le regole in `.cursor/rules/` forniscono contesto persistente:
 
 - **project-core.mdc** (alwaysApply): standard, pathlib, platformdirs, logging rotation, tooling
+- **preserve-working-code.mdc** (alwaysApply): non modificare codice funzionante senza richiesta esplicita
 - **pyside6-gui.mdc**: QThread, @Slot, dark QSS, drag-drop, cancellazione, animazioni
 - **ui-ux-2026.mdc**: layout, font, notifiche, accessibilità, first-run, loading
 - **yt-dlp-ffmpeg.mdc**: comandi FFmpeg, eccezioni, URL validation, performance, sub, retry

@@ -6,6 +6,7 @@ import sys
 from pathlib import Path
 
 from PySide6.QtCore import Qt, Slot
+from PySide6.QtGui import QFont
 from PySide6.QtWidgets import (
     QCheckBox,
     QComboBox,
@@ -46,6 +47,15 @@ class DownloadTab(QWidget):
         self._url_edit.setPlaceholderText("Incolla URL YouTube o trascina qui...")
         self._url_edit.setMinimumWidth(400)
         url_layout.addWidget(self._url_edit, 1)
+        self._clear_url_btn = QPushButton("\u2715")  # HEAVY BALLOT X, più visibile in molti font
+        self._clear_url_btn.setFixedSize(28, 28)
+        self._clear_url_btn.setFont(QFont(self._clear_url_btn.font().family(), 16, QFont.Weight.Bold))
+        self._clear_url_btn.setStyleSheet("color: white; padding: 0;")  # forza testo bianco visibile
+        self._clear_url_btn.setToolTip("Svuota URL")
+        self._clear_url_btn.clicked.connect(lambda: self._url_edit.clear())
+        self._clear_url_btn.setVisible(False)
+        self._url_edit.textChanged.connect(lambda t: self._clear_url_btn.setVisible(bool(t.strip())))
+        url_layout.addWidget(self._clear_url_btn)
         layout.addLayout(url_layout)
 
         # Output dir

@@ -4,7 +4,7 @@ import sys
 
 from PySide6.QtWidgets import QApplication, QMessageBox
 
-from .app import setup_app
+from .app import apply_hand_cursors, setup_app
 from .engines.ffmpeg_engine import check_ffmpeg_available
 from .gui.main_window import MainWindow
 from .utils.config import load_env_file
@@ -29,6 +29,7 @@ def main() -> int:
         )
 
     window = MainWindow()
+    apply_hand_cursors(window)
     window.show()
     return app.exec()
 
