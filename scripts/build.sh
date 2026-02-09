@@ -15,24 +15,17 @@ fi
 "$PIP" install pyinstaller -q
 
 # Download FFmpeg per bundle se non presente (allineato a CI)
-# macOS: scarica da BtbN; Linux: usa bundle se esiste
+# macOS: evermeet.cx (Intel, funziona su arm64 via Rosetta); Linux: usa bundle se esiste
 if [[ "$(uname -s)" = "Darwin" ]]; then
     if [[ ! -d bundle/ffmpeg/bin ]] || [[ ! -f bundle/ffmpeg/bin/ffmpeg ]]; then
         echo "Download FFmpeg per bundle..."
-        ARCH=$(uname -m)
-        if [[ "$ARCH" = "arm64" ]]; then
-            FFMPEG_ZIP="ffmpeg-master-latest-macosarm64-lgpl.zip"
-        else
-            FFMPEG_ZIP="ffmpeg-master-latest-macos64-lgpl.zip"
-        fi
-        curl -sL -o ffmpeg.zip "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/${FFMPEG_ZIP}"
-        unzip -o ffmpeg.zip
-        DIR=$(ls -d ffmpeg-master-latest-macos*-lgpl 2>/dev/null | head -1)
         mkdir -p bundle/ffmpeg/bin
-        cp "$DIR/bin/ffmpeg" bundle/ffmpeg/bin/
-        cp "$DIR/bin/ffprobe" bundle/ffmpeg/bin/
+        curl -sL -o ffmpeg.zip "https://evermeet.cx/ffmpeg/getrelease/ffmpeg/zip"
+        curl -sL -o ffprobe.zip "https://evermeet.cx/ffmpeg/getrelease/ffprobe/zip"
+        unzip -j -o ffmpeg.zip -d bundle/ffmpeg/bin/
+        unzip -j -o ffprobe.zip -d bundle/ffmpeg/bin/
         chmod +x bundle/ffmpeg/bin/ffmpeg bundle/ffmpeg/bin/ffprobe
-        rm -rf ffmpeg.zip "$DIR"
+        rm -f ffmpeg.zip ffprobe.zip
     fi
 fi
 

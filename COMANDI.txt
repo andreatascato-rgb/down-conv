@@ -3,11 +3,15 @@
 ## Sviluppo
 .\scripts\run.ps1
 
-## Release 0.8.0
+## Release (procedura completa)
+# 1. Commit e push codice
 git add -A
 git status
-git commit -m "release: 0.8.0 - wizard onboarding, FFmpeg bundle, Converter CTA, build macOS"
+git commit -m "release: X.Y.Z - descrizione"
 git push origin main
 
-git tag v0.8.0
-git push origin v0.8.0
+# 2. Tag e push — QUESTO AVVIA IL WORKFLOW RELEASE
+git tag vX.Y.Z
+git push origin vX.Y.Z
+
+# Verifica: github.com/.../actions e .../releases

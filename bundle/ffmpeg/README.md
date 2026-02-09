@@ -17,7 +17,7 @@ Su macOS/Linux: `ffmpeg` e `ffprobe` (senza .exe).
 
 **Automatico (CI e build locale):**
 - **Windows:** Release CI e `scripts/build.ps1` scaricano FFmpeg da gyan.dev (essentials).
-- **macOS:** Release CI e `scripts/build.sh` scaricano FFmpeg da BtbN/FFmpeg-Builds (arm64/x64) e lo includono nel bundle.
+- **macOS:** Release CI e `scripts/build.sh` scaricano FFmpeg da evermeet.cx (Intel, funziona su arm64 via Rosetta).
 
 **Manuale:** Scarica da https://github.com/BtbN/FFmpeg-Builds/releases o gyan.dev, estrai `bin/ffmpeg` e `bin/ffprobe` in `bundle/ffmpeg/bin/`.
 

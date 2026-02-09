@@ -84,20 +84,14 @@ jobs:
 
       - name: Download FFmpeg for bundle
         run: |
-          ARCH=$(uname -m)
-          if [ "$ARCH" = "arm64" ]; then
-            FFMPEG_ZIP="ffmpeg-master-latest-macosarm64-lgpl.zip"
-          else
-            FFMPEG_ZIP="ffmpeg-master-latest-macos64-lgpl.zip"
-          fi
-          curl -sL -o ffmpeg.zip "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/${FFMPEG_ZIP}"
-          unzip -o ffmpeg.zip
-          DIR=$(ls -d ffmpeg-master-latest-macos*-lgpl 2>/dev/null | head -1)
+          # BtbN non ha build macOS; evermeet.cx (Intel) funziona anche su arm64 via Rosetta
           mkdir -p bundle/ffmpeg/bin
-          cp "$DIR/bin/ffmpeg" bundle/ffmpeg/bin/
-          cp "$DIR/bin/ffprobe" bundle/ffmpeg/bin/
+          curl -sL -o ffmpeg.zip "https://evermeet.cx/ffmpeg/getrelease/ffmpeg/zip"
+          curl -sL -o ffprobe.zip "https://evermeet.cx/ffmpeg/getrelease/ffprobe/zip"
+          unzip -j -o ffmpeg.zip -d bundle/ffmpeg/bin/
+          unzip -j -o ffprobe.zip -d bundle/ffmpeg/bin/
           chmod +x bundle/ffmpeg/bin/ffmpeg bundle/ffmpeg/bin/ffprobe
-          rm -rf ffmpeg.zip "$DIR"
+          rm -f ffmpeg.zip ffprobe.zip
 
       - name: Build .app
         run: |
