@@ -26,6 +26,8 @@
 - [x] Download: supporto URL generico (tutti i siti yt-dlp: YouTube, SoundCloud, Vimeo, ecc.)
 - [x] Tab Impostazioni completa: Output, Download (formato), Converter (formato, qualità), sovrascrivi — persistente in config.json
 - [x] Release 0.7.0: formati FLAC, OGG, OPUS, WAV in Download; formati unificati in tutti i tab; docs allineati
+- [x] Wizard onboarding completo: Step 0 Benvenuto, Step 1 Cartella output, Step 2 FFmpeg
+- [x] Release 0.8.0: FFmpeg bundle, onboarding, Converter CTA, build macOS allineato a Windows
 
 ---
 
@@ -41,7 +43,6 @@
 - [ ] System tray e notifiche
 - [ ] Download sottotitoli
 - [ ] Selezione qualità video (720p/1080p/4K)
-- [ ] First-run checklist
 
 ---
 

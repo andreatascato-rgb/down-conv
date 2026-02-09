@@ -55,7 +55,7 @@ Applicazione desktop professionale per:
 | G3 | Gestione errori con messaggi chiari | P0 |
 | G4 | Logging con rotazione (10MB, 5 backup) | P0 |
 | G5 | Notifica toast al completamento (system tray) | P1 |
-| G6 | First-run: check FFmpeg + messaggio se mancante | P1 |
+| G6 | Onboarding wizard: Benvenuto, Output, FFmpeg (install con un clic o skip) | P1 |
 | G7 | Accessibilità: tab order, contrasto WCAG | P2 |
 
 ---
@@ -74,7 +74,7 @@ Applicazione desktop professionale per:
 - **Core:** Python 3.12+
 - **GUI:** PySide6
 - **Download:** yt-dlp (stable, nightly opzionale)
-- **Conversione:** FFmpeg (sistema)
+- **Conversione:** FFmpeg (bundle incluso nelle build release, o sistema)
 
 ---
 

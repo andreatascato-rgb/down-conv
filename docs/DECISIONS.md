@@ -56,12 +56,12 @@
 
 ---
 
-## ADR-005: FFmpeg come dipendenza sistema
+## ADR-005: FFmpeg — bundle + percorso sistema
 
-**Data:** Feb 2026
+**Data:** Feb 2026 | **Aggiornato:** Feb 2026
 
-**Decisione:** FFmpeg binario di sistema (PATH), non bundled
+**Decisione:** FFmpeg: bundle incluso nelle build release (Windows/macOS) + fallback PATH/sistema
 
-**Contesto:** FFmpeg è grande (~100MB+). Bundling complica packaging.
+**Contesto:** FFmpeg è grande (~100MB+). Per UX: bundle essentials in CI/build, estrazione in user_data_dir al primo avvio. ffmpeg_provider risolve: user_data → PATH → percorsi comuni Windows.
 
-**Conseguenze:** Utente deve installare FFmpeg. App verifica disponibilità all'avvio.
+**Conseguenze:** Utente non deve installare FFmpeg se usa build release. Onboarding wizard propone install con un clic. Converter/Impostazioni: CTA se mancante.

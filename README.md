@@ -14,10 +14,9 @@ Applicazione desktop professionale per **download video/audio da URL** (YouTube,
 2. Scarica l'asset per il tuo sistema:
    - **Windows:** `DownConv-vX.X.X-win64.exe`
    - **macOS:** `DownConv-vX.X.X-macos.zip` (estrai e apri `DownConv.app`)
-3. [Installa FFmpeg](https://ffmpeg.org/download.html) e aggiungilo al PATH (richiesto per conversione)
-4. Avvia l'app — nessuna installazione Python necessaria
+3. Avvia l'app — nessuna installazione Python o FFmpeg necessaria (FFmpeg incluso nel bundle)
 
-**Requisiti:** Windows 10+ / macOS 11+ (Intel o Apple Silicon), FFmpeg in PATH
+**Requisiti:** Windows 10+ / macOS 11+ (Intel o Apple Silicon)
 
 ---
 

@@ -19,12 +19,14 @@ from PySide6.QtWidgets import (
 )
 
 from ...utils.config import DEFAULT_SETTINGS, get_settings, save_settings
+from ...utils.ffmpeg_provider import can_extract_from_bundle, check_ffmpeg_available
 
 
 class SettingsTab(QWidget):
     """Tab Impostazioni. Emette settings_saved quando l'utente salva."""
 
     settings_saved = Signal()
+    ffmpeg_install_completed = Signal()  # Emesso dopo install FFmpeg (per refresh ConvertTab)
 
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
@@ -130,7 +132,27 @@ class SettingsTab(QWidget):
         self._overwrite_convert_cb = QCheckBox("Sovrascrivi file esistenti")
         form.addRow("", self._overwrite_convert_cb)
 
+        # Pulsante Installa FFmpeg (se non presente e bundle disponibile)
+        self._ffmpeg_btn = QPushButton("Installa FFmpeg per conversione audio")
+        self._ffmpeg_btn.clicked.connect(self._on_install_ffmpeg)
+        form.addRow("", self._ffmpeg_btn)
+
         return group
+
+    def _update_ffmpeg_button_visibility(self) -> None:
+        """Mostra pulsante Installa FFmpeg solo se FFmpeg assente e bundle disponibile."""
+        show = not check_ffmpeg_available() and can_extract_from_bundle()
+        self._ffmpeg_btn.setVisible(show)
+
+    def _on_install_ffmpeg(self) -> None:
+        """Apre dialog onboarding FFmpeg per installazione."""
+        from ...gui.dialogs.onboarding_ffmpeg_step import OnboardingFfmpegStep
+
+        dlg = OnboardingFfmpegStep(self)
+        dlg.exec()
+        dlg.deleteLater()
+        self._update_ffmpeg_button_visibility()
+        self.ffmpeg_install_completed.emit()
 
     def _on_format_changed(self) -> None:
         """Disabilita qualità per formati lossless."""
@@ -148,6 +170,7 @@ class SettingsTab(QWidget):
             line_edit.setText(path)
 
     def _load_values(self) -> None:
+        self._update_ffmpeg_button_visibility()
         s = get_settings()
         self._download_edit.setText(s.get("output_dir_download", ""))
         self._convert_edit.setText(s.get("output_dir_convert", ""))
@@ -196,3 +219,7 @@ class SettingsTab(QWidget):
         if save_settings(updates):
             self.settings_saved.emit()
             QMessageBox.information(self, "Salvato", "Impostazioni salvate.")
+
+    def refresh_from_config(self) -> None:
+        """Aggiorna da config (es. dopo install FFmpeg da altro tab)."""
+        self._update_ffmpeg_button_visibility()

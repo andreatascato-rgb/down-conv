@@ -11,7 +11,7 @@
 | **Esecuzione** | `python -m downconv.main` | `.exe` standalone, doppio click |
 | **Utente** | Sviluppatore con Python | Utente finale senza Python |
 | **Distribuzione** | Clone repo, pip install | Download, esegui |
-| **FFmpeg** | In PATH | Istruzioni chiare o bundle |
+| **FFmpeg** | In PATH | Bundle incluso (CI download automatico) |
 
 ---
 
@@ -26,9 +26,9 @@
 
 ### 2.2 FFmpeg
 
-- [ ] README: istruzioni installazione FFmpeg chiare
-- [ ] Link ffmpeg.org nella UI (già in messaggio first-run)
-- [ ] (Opzionale) Bundle FFmpeg: aumenta size ~100MB, ma UX migliore
+- [x] Bundle FFmpeg incluso (CI scarica automaticamente Windows + macOS)
+- [x] Onboarding wizard: proposta install con un clic
+- [x] Converter/Impostazioni: CTA se FFmpeg mancante
 
 ### 2.3 GitHub Release
 
@@ -39,8 +39,8 @@
 ### 2.4 Documentazione Utente
 
 - [ ] README: sezione "Download" con link Release
-- [ ] Requisiti: Windows 10+, FFmpeg
-- [ ] Istruzioni minimo: scarica, installa FFmpeg, avvia
+- [ ] Requisiti: Windows 10+, macOS 11+ (Intel/Apple Silicon)
+- [ ] Istruzioni minimo: scarica, avvia (FFmpeg incluso nel bundle)
 
 ### 2.5 Qualità
 

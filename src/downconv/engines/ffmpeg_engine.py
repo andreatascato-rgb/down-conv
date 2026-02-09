@@ -12,6 +12,8 @@ from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
+from ..utils.ffmpeg_provider import get_ffmpeg_path, get_ffprobe_path
+
 logger = logging.getLogger(__name__)
 
 # Regex per time=HH:MM:SS.ms nell'output FFmpeg
@@ -22,13 +24,13 @@ CONVERT_TIMEOUT_SEC = 600  # 10 min
 
 
 def check_ffmpeg_available() -> bool:
-    """Verifica se FFmpeg è disponibile in PATH."""
-    return shutil.which("ffmpeg") is not None
+    """Verifica se FFmpeg è disponibile (user_data, PATH, percorsi comuni)."""
+    return get_ffmpeg_path() is not None
 
 
 def _get_duration_seconds(input_path: Path, ffprobe_path: str | None = None) -> float | None:
     """Ottiene durata in secondi via ffprobe. Ritorna None se fallisce."""
-    ffprobe = ffprobe_path or shutil.which("ffprobe") or "ffprobe"
+    ffprobe = ffprobe_path or get_ffprobe_path() or shutil.which("ffprobe") or "ffprobe"
     cmd = [
         ffprobe,
         "-v",
@@ -136,7 +138,7 @@ class FfmpegEngine:
     """Wrapper FFmpeg per conversione audio. Preserva metadati."""
 
     def __init__(self, ffmpeg_path: str | None = None) -> None:
-        self.ffmpeg_path = ffmpeg_path or shutil.which("ffmpeg") or "ffmpeg"
+        self.ffmpeg_path = ffmpeg_path or get_ffmpeg_path() or shutil.which("ffmpeg") or "ffmpeg"
 
     def convert(
         self,

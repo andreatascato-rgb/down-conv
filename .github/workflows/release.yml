@@ -28,6 +28,17 @@ jobs:
           pip install -r requirements.txt
           pip install pyinstaller
 
+      - name: Download FFmpeg for bundle
+        run: |
+          mkdir -p bundle/ffmpeg/bin
+          Invoke-WebRequest -Uri "https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip" -OutFile ffmpeg.zip -UseBasicParsing
+          Expand-Archive -Path ffmpeg.zip -DestinationPath ffmpeg_extract
+          $binDir = Get-ChildItem ffmpeg_extract -Filter "ffmpeg-*-essentials_build" -Directory | Select-Object -First 1
+          Copy-Item "$($binDir.FullName)/bin/ffmpeg.exe" bundle/ffmpeg/bin/
+          Copy-Item "$($binDir.FullName)/bin/ffprobe.exe" bundle/ffmpeg/bin/
+          Remove-Item ffmpeg.zip
+          Remove-Item -Recurse ffmpeg_extract
+
       - name: Build executable
         run: |
           python -m PyInstaller --noconfirm --clean --onefile --windowed --name DownConv `
@@ -35,6 +46,7 @@ jobs:
             --hidden-import=PySide6.QtCore --hidden-import=PySide6.QtGui --hidden-import=PySide6.QtWidgets `
             --hidden-import=yt_dlp `
             --add-data "src/downconv/resources;downconv/resources" `
+            --add-data "bundle/ffmpeg;ffmpeg" `
             src/run_downconv.py
 
       - name: Get version
@@ -70,6 +82,23 @@ jobs:
           pip install -r requirements.txt
           pip install pyinstaller
 
+      - name: Download FFmpeg for bundle
+        run: |
+          ARCH=$(uname -m)
+          if [ "$ARCH" = "arm64" ]; then
+            FFMPEG_ZIP="ffmpeg-master-latest-macosarm64-lgpl.zip"
+          else
+            FFMPEG_ZIP="ffmpeg-master-latest-macos64-lgpl.zip"
+          fi
+          curl -sL -o ffmpeg.zip "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/${FFMPEG_ZIP}"
+          unzip -o ffmpeg.zip
+          DIR=$(ls -d ffmpeg-master-latest-macos*-lgpl 2>/dev/null | head -1)
+          mkdir -p bundle/ffmpeg/bin
+          cp "$DIR/bin/ffmpeg" bundle/ffmpeg/bin/
+          cp "$DIR/bin/ffprobe" bundle/ffmpeg/bin/
+          chmod +x bundle/ffmpeg/bin/ffmpeg bundle/ffmpeg/bin/ffprobe
+          rm -rf ffmpeg.zip "$DIR"
+
       - name: Build .app
         run: |
           python -m PyInstaller --noconfirm --clean --onefile --windowed --name DownConv \
@@ -77,6 +106,7 @@ jobs:
             --hidden-import=PySide6.QtCore --hidden-import=PySide6.QtGui --hidden-import=PySide6.QtWidgets \
             --hidden-import=yt_dlp \
             --add-data "src/downconv/resources:downconv/resources" \
+            --add-data "bundle/ffmpeg:ffmpeg" \
             src/run_downconv.py
 
       - name: Zip .app

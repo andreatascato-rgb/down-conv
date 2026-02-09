@@ -60,6 +60,11 @@ down&conv/
 │       ├── app.py          # QApplication setup
 │       ├── gui/
 │       │   ├── main_window.py
+│       │   ├── dialogs/
+│       │   │   ├── onboarding_wizard.py
+│       │   │   ├── onboarding_welcome_step.py
+│       │   │   ├── onboarding_output_step.py
+│       │   │   └── onboarding_ffmpeg_widget.py
 │       │   └── tabs/
 │       │       ├── download_tab.py
 │       │       ├── convert_tab.py
@@ -72,6 +77,7 @@ down&conv/
 │       │   └── ffmpeg_engine.py
 │       └── utils/
 │           ├── config.py
+│           ├── ffmpeg_provider.py
 │           ├── logging_config.py
 │           └── paths.py
 ├── tests/
@@ -117,4 +123,4 @@ down&conv/
 - **Python:** 3.12+
 - **PySide6:** GUI
 - **yt-dlp:** stable (yt-dlp[default]>=2024.1.0); nightly opzionale
-- **FFmpeg:** binario di sistema (PATH)
+- **FFmpeg:** binario di sistema (PATH) o estratto da bundle (user_data_dir)

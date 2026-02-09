@@ -4,7 +4,20 @@ Tutti i cambiamenti notevoli sono documentati qui. Formato [Keep a Changelog](ht
 
 ## [Unreleased]
 
-(Nessun cambiamento)
+## [0.8.0] - 2026-02-09
+
+### Added
+- Wizard onboarding completo a 3 step: Benvenuto (0), Cartella output (1), FFmpeg (2)
+- OnboardingFfmpegWidget: widget riutilizzabile in wizard e dialog standalone
+- Tab Converter: banner con CTA "Installa FFmpeg" quando mancante (dopo skip onboarding)
+- FFmpeg incluso nel bundle: onboarding ultimo step, installazione con un clic (offline)
+- Ricerca FFmpeg: user_data_dir, PATH, percorsi comuni Windows
+- Tab Impostazioni: pulsante "Installa FFmpeg" quando non presente e bundle disponibile
+
+### Changed
+- FFmpeg engine usa ffmpeg_provider (path risolto automaticamente)
+- Build release Windows: download automatico FFmpeg essentials in CI
+- Build macOS: allineato a Windows — download FFmpeg da BtbN (arm64/x64), inclusione in bundle
 
 ## [0.7.0] - 2026-02-09
 

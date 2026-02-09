@@ -1,3 +1,13 @@
-COMANDI:
+# Down&Conv - Comandi utili
 
-avvio sviluppo: .\scripts\run.ps1
+## Sviluppo
+.\scripts\run.ps1
+
+## Release 0.8.0
+git add -A
+git status
+git commit -m "release: 0.8.0 - wizard onboarding, FFmpeg bundle, Converter CTA, build macOS"
+git push origin main
+
+git tag v0.8.0
+git push origin v0.8.0

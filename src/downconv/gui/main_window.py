@@ -34,6 +34,8 @@ class MainWindow(QMainWindow):
         tabs.addTab(self._settings_tab, "Impostazioni")
 
         self._settings_tab.settings_saved.connect(self._on_settings_saved)
+        self._settings_tab.ffmpeg_install_completed.connect(self.refresh_from_config)
+        self._convert_tab.ffmpeg_install_completed.connect(self.refresh_from_config)
 
         layout = QVBoxLayout()
         layout.setContentsMargins(0, 0, 0, 0)
@@ -41,5 +43,10 @@ class MainWindow(QMainWindow):
         central.setLayout(layout)
 
     def _on_settings_saved(self) -> None:
+        self.refresh_from_config()
+
+    def refresh_from_config(self) -> None:
+        """Ricarica tab da config (es. dopo onboarding o salvataggio impostazioni)."""
         self._download_tab.refresh_from_config()
         self._convert_tab.refresh_from_config()
+        self._settings_tab.refresh_from_config()

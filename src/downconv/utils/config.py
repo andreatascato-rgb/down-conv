@@ -10,6 +10,7 @@ from .paths import get_config_file
 DEFAULT_SETTINGS = {
     "output_dir_download": str(Path.home() / "Downloads"),
     "output_dir_convert": str(Path.home() / "Downloads"),
+    "onboarding_completed": False,  # True dopo wizard onboarding (o skip)
     # Fase 2
     "convert_format": "mp3",
     "convert_quality": "320k",

@@ -5,7 +5,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from PySide6.QtCore import Slot
+from PySide6.QtCore import Signal, Slot
 from PySide6.QtWidgets import (
     QFileDialog,
     QFrame,
@@ -20,12 +20,16 @@ from PySide6.QtWidgets import (
 )
 
 from ...engines.ffmpeg_engine import check_ffmpeg_available
+from ...gui.dialogs.onboarding_ffmpeg_step import OnboardingFfmpegStep
 from ...services.conversion_service import ConversionWorker
 from ...utils.config import get_settings
+from ...utils.ffmpeg_provider import can_extract_from_bundle
 
 
 class ConvertTab(QWidget):
     """Tab per conversione batch. Drag-drop file."""
+
+    ffmpeg_install_completed = Signal()  # Emesso dopo install FFmpeg (per refresh altri tab)
 
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
@@ -42,6 +46,32 @@ class ConvertTab(QWidget):
         layout = QVBoxLayout(self)
         layout.setSpacing(12)
         layout.setContentsMargins(16, 16, 16, 16)
+
+        # Banner FFmpeg mancante (CTA installazione)
+        self._ffmpeg_banner = QFrame()
+        self._ffmpeg_banner.setObjectName("ffmpegBanner")
+        self._ffmpeg_banner.setStyleSheet(
+            "QFrame#ffmpegBanner { background-color: #2d2d30; border: 1px solid #0d7377; "
+            "border-radius: 6px; padding: 12px; }"
+        )
+        banner_layout = QHBoxLayout(self._ffmpeg_banner)
+        banner_layout.setSpacing(12)
+        self._ffmpeg_msg = QLabel("FFmpeg non trovato. La conversione audio richiede FFmpeg.")
+        self._ffmpeg_msg.setObjectName("secondaryText")
+        self._ffmpeg_msg.setWordWrap(True)
+        banner_layout.addWidget(self._ffmpeg_msg, 1)
+        self._ffmpeg_install_btn = QPushButton("Installa FFmpeg")
+        self._ffmpeg_install_btn.clicked.connect(self._on_install_ffmpeg)
+        banner_layout.addWidget(self._ffmpeg_install_btn)
+        self._ffmpeg_hint = QLabel(
+            "Usa la versione distribuita (exe) per l'installazione automatica."
+        )
+        self._ffmpeg_hint.setObjectName("secondaryText")
+        self._ffmpeg_hint.setStyleSheet("font-size: 9pt;")
+        self._ffmpeg_hint.setWordWrap(True)
+        banner_layout.addWidget(self._ffmpeg_hint)
+        layout.addWidget(self._ffmpeg_banner)
+        self._update_ffmpeg_banner()
 
         # File: layout come URL (label + box)
         file_layout = QHBoxLayout()
@@ -224,8 +254,26 @@ class ConvertTab(QWidget):
         for p in paths:
             self._list.addItem(p)
 
+    def _update_ffmpeg_banner(self) -> None:
+        """Mostra banner solo se FFmpeg assente. CTA Installa se bundle disponibile."""
+        has_ffmpeg = check_ffmpeg_available()
+        can_install = can_extract_from_bundle()
+        self._ffmpeg_banner.setVisible(not has_ffmpeg)
+        if not has_ffmpeg:
+            self._ffmpeg_install_btn.setVisible(can_install)
+            self._ffmpeg_hint.setVisible(not can_install)
+
+    def _on_install_ffmpeg(self) -> None:
+        """Apre dialog onboarding FFmpeg per installazione."""
+        dlg = OnboardingFfmpegStep(self)
+        dlg.exec()
+        dlg.deleteLater()
+        self._update_ffmpeg_banner()
+        self.ffmpeg_install_completed.emit()
+
     def refresh_from_config(self) -> None:
         """Aggiorna da config (chiamato dopo Salva in Impostazioni)."""
+        self._update_ffmpeg_banner()
         s = get_settings()
         path_str = s.get("output_dir_convert", str(Path.home() / "Downloads"))
         self._output_dir = Path(path_str)
@@ -245,12 +293,11 @@ class ConvertTab(QWidget):
 
     def _start_convert(self) -> None:
         if not check_ffmpeg_available():
-            QMessageBox.critical(
-                self,
-                "Errore",
-                "FFmpeg non trovato. Installalo e aggiungilo al PATH.\nhttps://ffmpeg.org/download.html",
-            )
-            return
+            dlg = OnboardingFfmpegStep(self)
+            dlg.exec()
+            dlg.deleteLater()
+            if not check_ffmpeg_available():
+                return
 
         files = []
         for i in range(self._list.count()):

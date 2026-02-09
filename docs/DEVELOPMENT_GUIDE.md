@@ -49,14 +49,16 @@ pip install --upgrade "yt-dlp[default] @ git+https://github.com/yt-dlp/yt-dlp.gi
 | `main.py` | Entry point, avvio QApplication |
 | `app.py` | Configurazione app, stili dark |
 | `gui/main_window.py` | Finestra principale, tab container |
+| `gui/dialogs/onboarding_wizard.py` | Wizard 3 step (Benvenuto, Output, FFmpeg) |
 | `gui/tabs/download_tab.py` | UI download URL, connessione DownloadWorker |
-| `gui/tabs/convert_tab.py` | UI conversione batch, drag-drop file |
-| `gui/tabs/settings_tab.py` | Impostazioni (output, formati default) |
+| `gui/tabs/convert_tab.py` | UI conversione batch, banner FFmpeg, drag-drop |
+| `gui/tabs/settings_tab.py` | Impostazioni (output, formati, CTA FFmpeg) |
 | `services/download_service.py` | DownloadWorker, orchestrazione yt-dlp |
 | `services/conversion_service.py` | ConversionWorker, batch FFmpeg |
 | `engines/ytdlp_engine.py` | Wrapper YoutubeDL |
 | `engines/ffmpeg_engine.py` | Wrapper FFmpeg subprocess |
 | `utils/config.py` | Config JSON, preferenze utente |
+| `utils/ffmpeg_provider.py` | Ricerca FFmpeg, estrazione da bundle |
 | `utils/logging_config.py` | Setup logging |
 | `utils/paths.py` | Path app data, download, etc. |
 
@@ -99,7 +101,7 @@ pip install nuitka
 nuitka --standalone --onefile --enable-plugin=pyside6 src/downconv/main.py
 ```
 
-**Nota:** FFmpeg deve essere distribuito separatamente o incluso nel bundle (--add-binary).
+**Nota:** Per build con FFmpeg incluso: la release CI e gli script `scripts/build.ps1` (Windows) / `scripts/build.sh` (macOS) scaricano FFmpeg automaticamente. Vedi `bundle/ffmpeg/README.md`.
 
 ---
 
@@ -126,5 +128,5 @@ pytest tests/ -v
 - [ ] requirements.txt aggiornato
 - [ ] Logging configurato
 - [ ] Nessun path assoluto hardcoded
-- [ ] FFmpeg availability check all'avvio
+- [x] Onboarding wizard (FFmpeg) all'avvio
 - [ ] Build PyInstaller testato

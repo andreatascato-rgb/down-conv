@@ -44,5 +44,8 @@ Thumbs.db
 *.spec
 *.exe
 
+# FFmpeg bundle binaries (grandi, aggiungere manualmente per build con FFmpeg incluso)
+bundle/ffmpeg/bin/
+
 # Logs (local)
 *.log
