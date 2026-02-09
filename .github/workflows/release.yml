@@ -59,13 +59,11 @@ jobs:
           $ver = "${{ github.ref_name }}" -replace '^v',''
           echo "VERSION=$ver" >> $env:GITHUB_OUTPUT
 
-      - name: Install Inno Setup
-        run: choco install innosetup -y
-
-      - name: Build installer
-        run: |
-          $ver = "${{ steps.version.outputs.VERSION }}"
-          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" /DMyAppVersion=$ver installer\DownConv.iss
+      - name: Build installer (Inno Setup)
+        uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
+        with:
+          path: installer/DownConv.iss
+          options: /DMyAppVersion=${{ steps.version.outputs.VERSION }} /O+
 
       - name: Prepare artifacts
         run: |

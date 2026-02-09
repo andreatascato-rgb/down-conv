@@ -40,8 +40,8 @@
 ## 4. Build in CI
 
 1. PyInstaller produce `dist\DownConv.exe`.
-2. Inno Setup (installato via Chocolatey) compila `installer/DownConv.iss` con `/DMyAppVersion=%VERSION%` (dal tag, es. `v1.0.0` → `1.0.0`).
-3. Output: `DownConv-Setup-1.0.0.exe`.
+2. Action `Minionguyjpro/Inno-Setup-Action@v1.2.2` compila `installer/DownConv.iss` con `options: /DMyAppVersion=$version` (dal tag, es. `v1.0.0` → `1.0.0`).
+3. Output in `dist\`: `DownConv-Setup-1.0.0.exe`.
 4. La release contiene:
    - **Portable:** `DownConv-v1.0.0-win64.exe` (exe nudo per chi non vuole installare).
    - **Installer:** `DownConv-Setup-1.0.0.exe` (consigliato per utenti finali).
