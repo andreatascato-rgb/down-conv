@@ -50,25 +50,65 @@
 
 ---
 
-## 3. Processo Rilascio
+## 3. Procedura Rilascio Completa
 
-```bash
-# 1. Verifica
-make check
+Il workflow `.github/workflows/release.yml` viene attivato al **push di un tag `v*`** e costruisce automaticamente .exe (Windows) e .zip (macOS).
 
-# 2. Aggiorna CHANGELOG, version
-# 3. Commit, push
-git add -A && git commit -m "release: 0.4.1" && git push
+### Passo 1 — Verifica
 
-# 4. Tag
-git tag v0.4.1
-git push origin v0.4.1
-
-# 5. GitHub: crea Release dal tag
-#    - Titolo: v0.4.1
-#    - Descrizione: copia da CHANGELOG
-#    - Workflow build caricherà .exe
+```powershell
+# Ruff + pytest (o make check se disponibile)
+ruff check src/
+ruff format src/
+pytest tests/ -q
 ```
+
+### Passo 2 — Aggiorna versione
+
+| File | Modifica |
+|------|----------|
+| `src/downconv/__init__.py` | `__version__ = "0.8.2"` |
+| `pyproject.toml` | `version = "0.8.2"` |
+
+### Passo 3 — Finalizza CHANGELOG
+
+In `CHANGELOG.md`:
+
+1. Sostituisci `## [Unreleased]` con `## [0.8.2] - YYYY-MM-DD`
+2. Mantieni le voci sotto (Added/Changed/Fixed)
+
+```markdown
+## [0.8.2] - 2026-02-09
+
+### Changed
+- Rilevamento FFmpeg migliorato: percorsi Chocolatey, Scoop, Winget; fallback PATH utente da registro Windows
+
+## [0.8.1] - 2026-02-09
+...
+```
+
+### Passo 4 — Commit e push
+
+```powershell
+git add -A
+git commit -m "release: v0.8.2"
+git push origin main
+```
+
+### Passo 5 — Tag e push (avvia build)
+
+```powershell
+git tag v0.8.2
+git push origin v0.8.2
+```
+
+Il push del tag attiva il workflow: build Windows (.exe) e macOS (.zip), crea la Release su GitHub e carica gli asset.
+
+### Passo 6 — Verifica Release
+
+- Vai su GitHub → Releases
+- Controlla che siano presenti `DownConv-v0.8.2-win64.exe` e `DownConv-v0.8.2-macos.zip`
+- Eventualmente modifica le note di rilascio (generate automaticamente da `generate_release_notes`)
 
 ---
 

@@ -4,6 +4,11 @@ Tutti i cambiamenti notevoli sono documentati qui. Formato [Keep a Changelog](ht
 
 ## [Unreleased]
 
+## [0.8.2] - 2026-02-09
+
+### Changed
+- Rilevamento FFmpeg migliorato: percorsi Chocolatey, Scoop, Winget; fallback PATH utente da registro Windows
+
 ## [0.8.1] - 2026-02-09
 
 ### Fixed

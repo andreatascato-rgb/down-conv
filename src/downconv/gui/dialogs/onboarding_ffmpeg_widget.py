@@ -15,6 +15,7 @@ from PySide6.QtWidgets import (
 
 from ...utils.ffmpeg_provider import (
     can_extract_from_bundle,
+    check_ffmpeg_available,
     extract_ffmpeg_from_bundle,
 )
 
@@ -23,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 class OnboardingFfmpegWidget(QWidget):
     """
-    Widget step FFmpeg: installazione o skip.
+    Widget step FFmpeg: installazione, skip, o "già trovato".
     Emette installed / skipped. Usato in wizard e in OnboardingFfmpegStep (dialog).
     """
 
@@ -44,15 +45,10 @@ class OnboardingFfmpegWidget(QWidget):
         title.setStyleSheet("font-size: 14pt; font-weight: bold;")
         layout.addWidget(title)
 
-        desc = QLabel(
-            "FFmpeg è lo strumento che permette di convertire i file audio "
-            "(es. da video a MP3, FLAC, ecc.).\n\n"
-            "L'app può installarlo automaticamente con un clic. "
-            "Non devi cercarlo, scaricarlo o configurare nulla."
-        )
-        desc.setWordWrap(True)
-        desc.setObjectName("secondaryText")
-        layout.addWidget(desc)
+        self._desc = QLabel()
+        self._desc.setWordWrap(True)
+        self._desc.setObjectName("secondaryText")
+        layout.addWidget(self._desc)
 
         self._progress = QProgressBar()
         self._progress.setRange(0, 0)  # Indeterminato
@@ -62,33 +58,54 @@ class OnboardingFfmpegWidget(QWidget):
         btn_layout = QHBoxLayout()
         btn_layout.addStretch()
 
-        can_install = can_extract_from_bundle()
-        self._install_btn = QPushButton("Installa FFmpeg")
-        self._install_btn.setDefault(True)
-        self._install_btn.clicked.connect(self._on_install)
-        self._install_btn.setVisible(can_install)
-        btn_layout.addWidget(self._install_btn)
-
-        self._skip_btn = QPushButton("Salta" if can_install else "Chiudi")
-        self._skip_btn.clicked.connect(self._on_skip)
-        btn_layout.addWidget(self._skip_btn)
+        ffmpeg_ok = check_ffmpeg_available()
+        if ffmpeg_ok:
+            self._desc.setText(
+                "FFmpeg è già presente sul tuo sistema. Puoi usare subito la conversione audio."
+            )
+            self._ok_btn = QPushButton("Avanti")
+            self._ok_btn.setDefault(True)
+            self._ok_btn.clicked.connect(self._on_skip)
+            btn_layout.addWidget(self._ok_btn)
+            self._install_btn = None
+            self._skip_btn = None
+            self._hint = None
+        else:
+            self._desc.setText(
+                "FFmpeg è lo strumento che permette di convertire i file audio "
+                "(es. da video a MP3, FLAC, ecc.).\n\n"
+                "L'app può installarlo automaticamente con un clic. "
+                "Non devi cercarlo, scaricarlo o configurare nulla."
+            )
+            can_install = can_extract_from_bundle()
+            self._install_btn = QPushButton("Installa FFmpeg")
+            self._install_btn.setDefault(True)
+            self._install_btn.clicked.connect(self._on_install)
+            self._install_btn.setVisible(can_install)
+            btn_layout.addWidget(self._install_btn)
+            self._skip_btn = QPushButton("Salta" if can_install else "Chiudi")
+            self._skip_btn.clicked.connect(self._on_skip)
+            btn_layout.addWidget(self._skip_btn)
+            self._ok_btn = None
+            if not can_install:
+                self._hint = QLabel(
+                    "FFmpeg non è incluso in questa build. "
+                    "Usa la versione distribuita (exe) per l'installazione automatica."
+                )
+                self._hint.setWordWrap(True)
+                self._hint.setObjectName("secondaryText")
+                self._hint.setStyleSheet("font-size: 9pt;")
+                layout.addWidget(self._hint)
+            else:
+                self._hint = None
 
         layout.addLayout(btn_layout)
 
-        if not can_install:
-            hint = QLabel(
-                "FFmpeg non è incluso in questa build. "
-                "Usa la versione distribuita (exe) per l'installazione automatica."
-            )
-            hint.setWordWrap(True)
-            hint.setObjectName("secondaryText")
-            hint.setStyleSheet("font-size: 9pt;")
-            layout.addWidget(hint)
-
     def _on_install(self) -> None:
         """Avvia estrazione in QThread per non bloccare UI."""
-        self._install_btn.setEnabled(False)
-        self._skip_btn.setEnabled(False)
+        if self._install_btn and self._skip_btn:
+            self._install_btn.setEnabled(False)
+            self._skip_btn.setEnabled(False)
         self._progress.setVisible(True)
 
         from PySide6.QtCore import QThread
@@ -109,8 +126,9 @@ class OnboardingFfmpegWidget(QWidget):
 
     def _handle_extract_done(self, success: bool, err: str) -> None:
         self._progress.setVisible(False)
-        self._install_btn.setEnabled(True)
-        self._skip_btn.setEnabled(True)
+        if self._install_btn and self._skip_btn:
+            self._install_btn.setEnabled(True)
+            self._skip_btn.setEnabled(True)
         if success:
             self.installed.emit()
         else:
