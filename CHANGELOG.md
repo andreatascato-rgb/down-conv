@@ -4,7 +4,12 @@ Tutti i cambiamenti notevoli sono documentati qui. Formato [Keep a Changelog](ht
 
 ## [Unreleased]
 
+### (nessun cambiamento in sviluppo)
+
+## [1.0.4] - 2026-02-10
+
 ### Fixed
+- Ruff lint: E501 (line length), I001 (import order) in main_window
 - Test ytdlp: patch target `yt_dlp.YoutubeDL` invece di `downconv.engines.ytdlp_engine.YoutubeDL` (lazy import)
 
 ## [1.0.3] - 2026-02-10
