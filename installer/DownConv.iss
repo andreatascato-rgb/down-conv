@@ -28,7 +28,7 @@ UninstallDisplayIcon={app}\{#MyAppExeName}
 Compression=lzma2
 SolidCompression=yes
 WizardStyle=modern
-PrivilegesRequired=currentuser
+PrivilegesRequired=lowest
 
 [Languages]
 Name: "italian"; MessagesFile: "compiler:Languages\Italian.isl"

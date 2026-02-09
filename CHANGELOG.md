@@ -6,6 +6,7 @@ Tutti i cambiamenti notevoli sono documentati qui. Formato [Keep a Changelog](ht
 
 ### Fixed
 - Release workflow (Windows): `mkdir -p` sostituito con PowerShell `New-Item`; version default; artifact upload condizionale (solo file esistenti); step Verify exe; installer opzionale (continue-on-error) per avere almeno portable in release
+- Installer Inno Setup: `PrivilegesRequired=currentuser` sostituito con `lowest` (valore valido in IS 6.x)
 
 ## [1.0.0] - 2026-02-09
 
