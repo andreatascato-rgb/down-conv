@@ -4,6 +4,11 @@ Tutti i cambiamenti notevoli sono documentati qui. Formato [Keep a Changelog](ht
 
 ## [Unreleased]
 
+## [0.8.1] - 2026-02-09
+
+### Fixed
+- Build macOS: FFmpeg da evermeet.cx (BtbN non fornisce build macOS)
+
 ## [0.8.0] - 2026-02-09
 
 ### Added
