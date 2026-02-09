@@ -1,6 +1,6 @@
 # Down&Conv - Architettura Software
 
-**Anno:** 2026 | **Standard:** Massimi | **Versione:** 1.0
+**Anno:** 2026 | **Standard:** Massimi | **Versione:** 1.2 (app 1.0.2)
 
 ---
 
@@ -19,9 +19,9 @@ L'architettura segue i principi: **modularità**, **non-blocking UI**, **separaz
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │                         GUI Layer (PySide6)                      │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌──────────┐│
-│  │ MainWindow  │  │ DownloadTab │  │ ConvertTab  │  │SettingsTab││
-│  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘  └────┬─────┘│
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌──────────┐│
+│  │ MainWindow  │  │ DownloadTab │  │ ConvertTab  │  │ SettingsTab │  │ AiutoTab ││
+│  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘  └────┬─────┘│
 │         │                │                │                       │
 │         └────────────────┼────────────────┘                      │
 │                          │ Signals/Slots                          │
@@ -68,7 +68,8 @@ down&conv/
 │       │   └── tabs/
 │       │       ├── download_tab.py
 │       │       ├── convert_tab.py
-│       │       └── settings_tab.py
+│       │       ├── settings_tab.py
+│       │       └── aiuto_tab.py      # Aggiornamenti, Apri log, Segnala bug
 │       ├── services/
 │       │   ├── download_queue_service.py
 │       │   ├── download_service.py
@@ -81,7 +82,10 @@ down&conv/
 │           ├── disk_check.py
 │           ├── ffmpeg_provider.py
 │           ├── logging_config.py
-│           └── paths.py
+│           ├── paths.py
+│           ├── report_bug.py         # URL issue GitHub precompilata
+│           ├── single_instance.py    # QLocalServer (una sola finestra)
+│           └── update_check.py       # Check aggiornamenti (GitHub API)
 ├── tests/
 ├── requirements.txt
 ├── pyproject.toml
@@ -105,6 +109,12 @@ down&conv/
 3. Worker usa `ThreadPoolExecutor` per batch parallelo
 4. Ogni task FFmpeg emette progress → Signal aggregato
 5. Completato → `finished` signal → UI notifica
+
+### 4.3 Avvio, single instance e aggiornamenti
+1. `main.py`: dopo `QApplication`, `try_activate_existing_instance()`; se un'istanza è già in esecuzione → invia "show" e esce (una sola finestra).
+2. Prima istanza: `create_single_instance_server()` in ascolto; `MainWindow` con tab Download, Converter, Impostazioni, **Aiuto**.
+3. All'avvio: `UpdateCheckWorker` (QThread) interroga GitHub API; se c'è aggiornamento → tab Aiuto evidenziata (colore), in tab: pulsante **Aggiorna** (procedura guidata); in tab Aiuto anche **Apri cartella log** e **Segnala un bug** (issue precompilata via `report_bug.get_report_bug_url()`).
+4. Crash: `excepthook` mostra dialog con **Apri cartella log** e **Segnala questo errore** (issue con eccezione nel body).
 
 ---
 

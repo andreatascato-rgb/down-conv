@@ -6,9 +6,6 @@ import shutil
 from collections.abc import Callable
 from pathlib import Path
 
-from yt_dlp import YoutubeDL
-from yt_dlp.utils import PostProcessingError
-
 from ..utils.disk_check import MSG_DISK_FULL, is_disk_full_error
 
 logger = logging.getLogger(__name__)
@@ -47,6 +44,8 @@ class YtdlpEngine:
 
     def extract_info(self, url: str, download: bool = False) -> dict | None:
         """Estrae metadata senza download. Ritorna None su errore."""
+        from yt_dlp import YoutubeDL
+
         opts = {
             "quiet": True,
             "no_warnings": True,
@@ -137,6 +136,9 @@ class YtdlpEngine:
                 progress_callback(d)
 
             opts["progress_hooks"] = [hook]
+
+        from yt_dlp import YoutubeDL
+        from yt_dlp.utils import PostProcessingError
 
         try:
             with YoutubeDL(opts) as ydl:

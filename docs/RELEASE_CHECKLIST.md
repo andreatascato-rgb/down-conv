@@ -112,9 +112,9 @@ Il push del tag attiva il workflow: build Windows (.exe) e macOS (.zip), crea la
 
 ---
 
-## 5. Prossimi Passi (post v1.0)
+## 5. Prossimi Passi (post v1.0.1)
 
-- Installer NSIS/Inno Setup (setup.exe invece di .exe nudo)
-- System tray + notifiche
-- Auto-update (opzionale)
-- PyPI: `pip install downconv` per utenti con Python
+- [x] Installer Inno Setup (DownConv-Setup-X.X.X.exe) — già in uso
+- [x] Check aggiornamenti all'avvio + tab Aiuto (Aggiorna, Riprova) — già in uso
+- [ ] System tray + notifiche (backlog)
+- [ ] PyPI: `pip install downconv` per utenti con Python (opzionale)

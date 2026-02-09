@@ -1,7 +1,8 @@
 # Down&Conv - Roadmap qualità desktop 2026
 
 **Obiettivo:** App desktop “perfetta” 2026 (esclusa firma codice a pagamento).  
-**Procedura:** un punto alla volta, poi verifica e merge.
+**Procedura:** un punto alla volta, poi verifica e merge.  
+**Implementazione:** tab Aiuto (non menu), check all'avvio, report bug con issue precompilate. Vedi ARCHITECTURE §4.3.
 
 ---
 

@@ -4,7 +4,7 @@ import ctypes
 import logging
 import sys
 
-from PySide6.QtCore import QUrl
+from PySide6.QtCore import QTimer, QUrl
 from PySide6.QtGui import QDesktopServices
 from PySide6.QtWidgets import QApplication, QMessageBox
 
@@ -87,10 +87,11 @@ def main() -> int:
         return 0
 
     window = MainWindow()
-    apply_hand_cursors(window)
     # Server per single instance: seconda istanza invia "show" → alza questa finestra
     _single_instance_server = create_single_instance_server(lambda: _raise_window(window))
     window.show()
+    # Cursori manina dopo show per non ritardare il primo frame (avvio più reattivo)
+    QTimer.singleShot(0, lambda: apply_hand_cursors(window))
     _show_onboarding_wizard_if_needed(window)
     return app.exec()
 

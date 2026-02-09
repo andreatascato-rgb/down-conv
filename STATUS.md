@@ -1,6 +1,6 @@
 # Down&Conv - Stato Progetto
 
-**Ultimo aggiornamento:** 2026-02-09
+**Ultimo aggiornamento:** 2026-02-10
 
 ---
 
@@ -12,14 +12,16 @@
 
 ## Pronto per commit / push / release
 
-- [x] Roadmap 2026 completata: dipendenze pinnate, single instance, tab Aiuto (aggiornamenti + Aggiorna/Riprova + Apri log + Segnala bug), report bug con issue GitHub precompilate, dialog crash con Apri cartella log e Segnala questo errore
-- [x] Documentazione allineata: ROADMAP_2026, GAP_ANALYSIS (checklist), CHANGELOG [Unreleased]
+- [x] Release 1.0.2: avvio più rapido (preload background, lazy yt-dlp, tab lazy + preload)
+- [x] Documentazione allineata: CHANGELOG [1.0.2], STATUS, version in __init__ e pyproject
 - [x] `.\scripts\check.ps1` (ruff + pytest) passano
 
 ---
 
 ## Done
 
+- [x] **Release 1.0.2:** Avvio più rapido — preload in background (yt-dlp + tab), lazy import engine, cursori dopo show
+- [x] **Release 1.0.1:** Single instance, tab Aiuto (aggiornamenti, log, segnala bug), report bug issue precompilata, dipendenze pinnate
 - [x] **Release 1.0.0:** Windows-only, installer Inno Setup (portable + Setup.exe), FFmpeg in onboarding/bundle, doc coerente
 - [x] Release 0.8.4: fix download Ottimale, video MP4/MKV in Impostazioni, un dropdown Formato, messaggi progress user-friendly
 - [x] Priorità basse: test DownloadQueueWorker, retry falliti, doc make/Windows

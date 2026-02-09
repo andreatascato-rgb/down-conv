@@ -56,6 +56,7 @@ Applicazione desktop professionale per:
 | G5 | Notifica toast al completamento (system tray) | P1 |
 | G6 | Onboarding wizard: Benvenuto, Output, FFmpeg (install con un clic o skip) | P1 |
 | G7 | Accessibilità: tab order, contrasto WCAG | P2 |
+| G8 | Tab Aiuto: check aggiornamenti all'avvio, Aggiorna (procedura guidata), Apri cartella log, Segnala bug (issue GitHub precompilata); dialog crash con Apri log e Segnala errore | P1 ✓ |
 
 ---
 

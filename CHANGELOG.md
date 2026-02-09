@@ -6,6 +6,11 @@ Tutti i cambiamenti notevoli sono documentati qui. Formato [Keep a Changelog](ht
 
 ### (nessun cambiamento in sviluppo)
 
+## [1.0.2] - 2026-02-10
+
+### Changed
+- Avvio più rapido: finestra appare subito; preload in background (QThread) carica yt-dlp e moduli tab, poi crea i tab Converter/Impostazioni così il click resta istantaneo. Import lazy yt-dlp in engine; cursori manina dopo show.
+
 ## [1.0.1] - 2026-02-09
 
 ### Added

@@ -1,6 +1,6 @@
 # Down&Conv - Gap Analysis
 
-**Data:** 2026-02-09 | **Team:** Analisi completa pre-release
+**Data:** 2026-02-10 | **Team:** Analisi completa pre-release
 
 ---
 

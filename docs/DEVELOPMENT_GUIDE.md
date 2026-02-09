@@ -53,6 +53,7 @@ pip install --upgrade "yt-dlp[default] @ git+https://github.com/yt-dlp/yt-dlp.gi
 | `gui/tabs/download_tab.py` | UI download URL (lista coda, Tipo+Qualità/Formato), DownloadQueueWorker |
 | `gui/tabs/convert_tab.py` | UI conversione batch, banner FFmpeg, drag-drop |
 | `gui/tabs/settings_tab.py` | Impostazioni (output, formati, CTA FFmpeg) |
+| `gui/tabs/aiuto_tab.py` | Tab Aiuto: aggiornamenti (check avvio, Aggiorna/Riprova), Apri cartella log, Segnala bug |
 | `services/download_service.py` | DownloadWorker (singolo) |
 | `services/download_queue_service.py` | DownloadQueueWorker, coda sequenziale |
 | `services/conversion_service.py` | ConversionWorker, batch FFmpeg |
@@ -61,7 +62,10 @@ pip install --upgrade "yt-dlp[default] @ git+https://github.com/yt-dlp/yt-dlp.gi
 | `utils/config.py` | Config JSON, preferenze utente; costanti `DOWNLOAD_AUDIO_FORMATS`, `CONVERT_FORMATS` (gerarchia formati) |
 | `utils/ffmpeg_provider.py` | Ricerca FFmpeg, estrazione da bundle |
 | `utils/logging_config.py` | Setup logging |
-| `utils/paths.py` | Path app data, download, etc. |
+| `utils/paths.py` | Path app data, config, log (platformdirs) |
+| `utils/single_instance.py` | QLocalServer: una sola istanza, seconda porta in primo piano la prima |
+| `utils/update_check.py` | Check aggiornamenti (GitHub API), UpdateCheckWorker |
+| `utils/report_bug.py` | URL issue GitHub precompilata (versione, OS, path log, eccezione opzionale) |
 
 ---
 
