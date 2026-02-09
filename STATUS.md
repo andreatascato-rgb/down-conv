@@ -10,6 +10,14 @@
 
 ---
 
+## Pronto per commit / push / release
+
+- [x] Roadmap 2026 completata: dipendenze pinnate, single instance, tab Aiuto (aggiornamenti + Aggiorna/Riprova + Apri log + Segnala bug), report bug con issue GitHub precompilate, dialog crash con Apri cartella log e Segnala questo errore
+- [x] Documentazione allineata: ROADMAP_2026, GAP_ANALYSIS (checklist), CHANGELOG [Unreleased]
+- [x] `.\scripts\check.ps1` (ruff + pytest) passano
+
+---
+
 ## Done
 
 - [x] **Release 1.0.0:** Windows-only, installer Inno Setup (portable + Setup.exe), FFmpeg in onboarding/bundle, doc coerente

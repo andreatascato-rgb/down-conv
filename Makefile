@@ -61,5 +61,6 @@ build:
 	$(PIP) install pyinstaller
 	pyinstaller --onefile --windowed --name DownConv --paths=src \
 		--hidden-import=PySide6.QtCore --hidden-import=PySide6.QtGui --hidden-import=PySide6.QtWidgets \
+		--hidden-import=PySide6.QtNetwork \
 		--add-data "src/downconv/resources;downconv/resources" \
 		src/run_downconv.py

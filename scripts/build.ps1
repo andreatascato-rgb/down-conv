@@ -33,6 +33,7 @@ $iconPath = "src/downconv/resources/icon.ico"
 if (-not (Test-Path $iconPath)) { python scripts/generate_icon.py }
 & .venv\Scripts\pyinstaller.exe --onefile --windowed --name DownConv --paths=src --icon=$iconPath `
     --hidden-import=PySide6.QtCore --hidden-import=PySide6.QtGui --hidden-import=PySide6.QtWidgets `
+    --hidden-import=PySide6.QtNetwork `
     --hidden-import=yt_dlp `
     @addData `
     src/run_downconv.py

@@ -21,7 +21,7 @@ Applicazione desktop professionale per **download video/audio da URL** (YouTube,
 1. **Installer:** doppio clic su `DownConv-Setup-X.X.X.exe` → scegli cartella (o lascia predefinita) → fine. L'app si apre dal Menu Start (cartella "DownConv").
 2. **Portable:** doppio clic su `DownConv-vX.X.X-win64.exe`. L'app parte senza installare nulla.
 3. **Configurazione iniziale (solo prima volta):** si apre un breve wizard (3 step) — cartella dove salvare i file (default: Download) e FFmpeg. Puoi cliccare "Installa FFmpeg" (consigliato per la conversione) o "Salta"; in ogni caso il download funziona e FFmpeg è già incluso nell'app.
-4. Dopo il wizard vedi la finestra principale: tab **Download** (URL → video/audio) e **Converter** (file audio → altro formato).
+4. Dopo il wizard vedi la finestra principale: tab **Download**, **Converter**, **Impostazioni** e **Aiuto** (aggiornamenti, cartella log, segnala bug).
 
 Se Windows chiede conferma ("App non riconosciuta"): clicca "Altre informazioni" → "Esegui comunque". L'app non richiede diritti amministratore.
 

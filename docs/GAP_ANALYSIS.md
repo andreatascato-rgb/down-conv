@@ -96,6 +96,6 @@
 
 - [x] Spazio disco: pre-check + messaggio ENOSPC
 - [x] ARCHITECTURE aggiornato
-- [ ] Ruff + pytest passano
-- [ ] CHANGELOG aggiornato
-- [ ] Nessun `print()` in produzione
+- [x] Ruff + pytest passano
+- [x] CHANGELOG aggiornato
+- [x] Nessun `print()` in produzione

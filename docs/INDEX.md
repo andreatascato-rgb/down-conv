@@ -19,6 +19,9 @@
 | [RESEARCH_2026_AVANZATO.md](RESEARCH_2026_AVANZATO.md) | Ricerca avanzata: UI, UX, performance, notifiche, accessibilità |
 | [DEV_MANAGEMENT.md](DEV_MANAGEMENT.md) | Gestione sviluppo: variabili, Git, pre-commit, versioning |
 | [RELEASE_CHECKLIST.md](RELEASE_CHECKLIST.md) | Checklist rilascio produzione, build .exe, GitHub Release |
+| [ROADMAP_2026.md](ROADMAP_2026.md) | Piano qualità desktop 2026 (dipendenze, single instance, aggiornamenti, report bug) |
+| [GAP_ANALYSIS.md](GAP_ANALYSIS.md) | Lacune progetto, checklist pre-release |
+| [SITI_SUPPORTATI.md](SITI_SUPPORTATI.md) | Siti considerati sicuri per il download (v1.0, yt-dlp stable) |
 
 ---
 
@@ -38,6 +41,7 @@
 | Fix bug | File coinvolti + regole `.cursor/rules/` |
 | Refactor | ARCHITECTURE, WORKFLOW |
 | Download logic | yt-dlp-ffmpeg.mdc, API_DESIGN |
+| Siti supportati / utente | SITI_SUPPORTATI.md |
 | UI/GUI | pyside6-gui.mdc, ARCHITECTURE |
 | Packaging / Rilascio | TECH_STACK, DEVELOPMENT_GUIDE, RELEASE_CHECKLIST |
 

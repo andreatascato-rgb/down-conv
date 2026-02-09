@@ -4,6 +4,21 @@ Tutti i cambiamenti notevoli sono documentati qui. Formato [Keep a Changelog](ht
 
 ## [Unreleased]
 
+### (nessun cambiamento in sviluppo)
+
+## [1.0.1] - 2026-02-09
+
+### Added
+- `docs/ROADMAP_2026.md`: piano qualità desktop 2026 (single instance, auto-update, crash feedback, dipendenze pinnate)
+- Single instance: una sola finestra; seconda istanza porta in primo piano la prima (QLocalServer/QLocalSocket, `utils/single_instance.py`)
+- Tab **Aiuto**: aggiornamenti (check avvio, tab evidenziata se update, pulsante Aggiorna con procedura guidata e "Apri e chiudi app", Riprova se offline); Apri cartella log; Segnala un bug (issue GitHub precompilata)
+- Report bug: `utils/report_bug.py` — issue precompilata (versione, OS, path log); dialog crash con **Apri cartella log** e **Segnala questo errore** (issue con eccezione nel body)
+
+### Changed
+- Dipendenze pinnate in `requirements.txt` (PySide6, platformdirs, yt-dlp) per build riproducibili
+- Messaggio offline: "Connessione non disponibile. Riprova quando sei in linea." in tab Aiuto
+- Doc: ROADMAP_2026, GAP_ANALYSIS (checklist), STATUS, INDEX aggiornati
+
 ### Fixed
 - Release workflow (Windows): `mkdir -p` sostituito con PowerShell `New-Item`; version default; artifact upload condizionale (solo file esistenti); step Verify exe; installer opzionale (continue-on-error) per avere almeno portable in release
 - Installer Inno Setup: `PrivilegesRequired=currentuser` sostituito con `lowest` (valore valido in IS 6.x)

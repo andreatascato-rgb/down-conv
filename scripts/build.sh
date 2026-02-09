@@ -34,6 +34,7 @@ FFMPEG_DATA=""
 [[ -d bundle/ffmpeg ]] && FFMPEG_DATA="--add-data bundle/ffmpeg:ffmpeg"
 "$PY" -m PyInstaller --onefile --windowed --name DownConv --paths=src \
     --hidden-import=PySide6.QtCore --hidden-import=PySide6.QtGui --hidden-import=PySide6.QtWidgets \
+    --hidden-import=PySide6.QtNetwork \
     --hidden-import=yt_dlp \
     --add-data "src/downconv/resources:downconv/resources" \
     $FFMPEG_DATA \

@@ -48,6 +48,7 @@ jobs:
             --paths=src `
             --icon=src/downconv/resources/icon.ico `
             --hidden-import=PySide6.QtCore --hidden-import=PySide6.QtGui --hidden-import=PySide6.QtWidgets `
+            --hidden-import=PySide6.QtNetwork `
             --hidden-import=yt_dlp `
             --add-data "src/downconv/resources;downconv/resources" `
             --add-data "bundle/ffmpeg;ffmpeg" `

@@ -1,14 +1,15 @@
-# Down&Conv - Dipendenze Python
+# Down&Conv - Dipendenze Python (versioni pinnate per build riproducibili)
 # Python 3.12+
+# Per aggiornare: cambiare versioni qui, poi pip install -r requirements.txt e testare.
 
 # GUI
-PySide6>=6.6.0
+PySide6==6.10.2
 
-# Download YouTube (stable; se YouTube rompe: pip install "yt-dlp[default] @ git+...@master")
-yt-dlp[default]>=2024.1.0
+# Download (yt-dlp; se YouTube rompe: pip install "yt-dlp[default] @ git+https://github.com/yt-dlp/yt-dlp.git@master")
+yt-dlp[default]==2026.2.4
 
 # Config paths (platformdirs)
-platformdirs>=4.0.0
+platformdirs==4.5.1
 
 # Dev (opzionale): ruff, pytest, pytest-subprocess
 # ruff>=0.1.0  pytest  pytest-subprocess
