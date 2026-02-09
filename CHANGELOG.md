@@ -4,6 +4,9 @@ Tutti i cambiamenti notevoli sono documentati qui. Formato [Keep a Changelog](ht
 
 ## [Unreleased]
 
+### Fixed
+- Release workflow (Windows): `mkdir -p` sostituito con PowerShell `New-Item`; version default; artifact upload condizionale (solo file esistenti); step Verify exe; installer opzionale (continue-on-error) per avere almeno portable in release
+
 ## [1.0.0] - 2026-02-09
 
 ### Added

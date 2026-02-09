@@ -30,12 +30,12 @@ jobs:
 
       - name: Download FFmpeg for bundle
         run: |
-          mkdir -p bundle/ffmpeg/bin
+          New-Item -ItemType Directory -Force -Path bundle\ffmpeg\bin | Out-Null
           Invoke-WebRequest -Uri "https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip" -OutFile ffmpeg.zip -UseBasicParsing
           Expand-Archive -Path ffmpeg.zip -DestinationPath ffmpeg_extract
           $binDir = Get-ChildItem ffmpeg_extract -Filter "ffmpeg-*-essentials_build" -Directory | Select-Object -First 1
-          Copy-Item "$($binDir.FullName)/bin/ffmpeg.exe" bundle/ffmpeg/bin/
-          Copy-Item "$($binDir.FullName)/bin/ffprobe.exe" bundle/ffmpeg/bin/
+          Copy-Item "$($binDir.FullName)\bin\ffmpeg.exe" bundle\ffmpeg\bin\
+          Copy-Item "$($binDir.FullName)\bin\ffprobe.exe" bundle\ffmpeg\bin\
           Remove-Item ffmpeg.zip
           Remove-Item -Recurse ffmpeg_extract
 
@@ -57,10 +57,17 @@ jobs:
         id: version
         run: |
           $ver = "${{ github.ref_name }}" -replace '^v',''
+          if ([string]::IsNullOrWhiteSpace($ver)) { $ver = "1.0.0" }
           echo "VERSION=$ver" >> $env:GITHUB_OUTPUT
+
+      - name: Verify exe
+        run: |
+          if (-not (Test-Path dist\DownConv.exe)) { throw "dist\DownConv.exe non trovato dopo PyInstaller" }
+          Get-ChildItem dist
 
       - name: Build installer (Inno Setup)
         uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
+        continue-on-error: true
         with:
           path: installer/DownConv.iss
           options: /DMyAppVersion=${{ steps.version.outputs.VERSION }} /O+
@@ -69,15 +76,34 @@ jobs:
         run: |
           $tag = "${{ github.ref_name }}"
           $ver = "${{ steps.version.outputs.VERSION }}"
-          Rename-Item dist\DownConv.exe "DownConv-$tag-win64.exe"
-          Move-Item "dist\DownConv-$tag-win64.exe" .
-          Move-Item "dist\DownConv-Setup-$ver.exe" .
+          if ([string]::IsNullOrWhiteSpace($ver)) { $ver = "1.0.0" }
+          Rename-Item -Path dist\DownConv.exe -NewName "DownConv-$tag-win64.exe" -ErrorAction Stop
+          Move-Item -Path "dist\DownConv-$tag-win64.exe" -Destination . -Force
+          $setup = Get-ChildItem -Path dist -Filter "DownConv-Setup-*.exe" -ErrorAction SilentlyContinue | Select-Object -First 1
+          if ($setup) {
+            Move-Item -Path $setup.FullName -Destination ".\DownConv-Setup-$ver.exe" -Force
+          } else {
+            Write-Warning "DownConv-Setup-*.exe non trovato in dist; carico solo portable."
+          }
+          Get-ChildItem -Filter "*.exe"
+
+      - name: List artifacts to upload
+        id: artifacts
+        run: |
+          $portable = "DownConv-${{ github.ref_name }}-win64.exe"
+          $list = $portable
+          if (Test-Path "DownConv-Setup-${{ steps.version.outputs.VERSION }}.exe") {
+            $list += "`nDownConv-Setup-${{ steps.version.outputs.VERSION }}.exe"
+          }
+          echo "files<<EOF" >> $env:GITHUB_OUTPUT
+          echo "$list" >> $env:GITHUB_OUTPUT
+          echo "EOF" >> $env:GITHUB_OUTPUT
 
       - name: Upload to Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_name }}
-          files: |
-            DownConv-${{ github.ref_name }}-win64.exe
-            DownConv-Setup-${{ steps.version.outputs.VERSION }}.exe
+          files: ${{ steps.artifacts.outputs.files }}
           generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
