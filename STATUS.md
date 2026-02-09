@@ -12,6 +12,7 @@
 
 ## Done
 
+- [x] **Release 1.0.0:** Windows-only, installer Inno Setup (portable + Setup.exe), FFmpeg in onboarding/bundle, doc coerente
 - [x] Release 0.8.4: fix download Ottimale, video MP4/MKV in Impostazioni, un dropdown Formato, messaggi progress user-friendly
 - [x] Priorità basse: test DownloadQueueWorker, retry falliti, doc make/Windows
 - [x] Test DownloadQueueWorker: test_download_queue.py (3 test)
@@ -53,10 +54,9 @@
 
 ## Done (release prep)
 
-- [x] Supporto macOS (build .app, CI, scripts, docs)
-- [x] Piano rilascio produzione (RELEASE_CHECKLIST.md)
-- [x] Workflow GitHub: build .exe su Release
-- [x] README: sezione Download per utenti finali
+- [x] Installer Windows (Inno Setup), CI: portable + DownConv-Setup-X.X.X.exe su tag
+- [x] Piano rilascio produzione (RELEASE_CHECKLIST.md), docs/INSTALLER.md
+- [x] README: Download, Primo avvio, Requisiti Windows 10+
 
 ## Backlog
 

@@ -55,65 +55,31 @@ jobs:
 
       - name: Get version
         id: version
-        run: echo "VERSION=${{ github.ref_name }}" >> $env:GITHUB_OUTPUT
-
-      - name: Rename artifact
         run: |
-          $exe = Get-ChildItem dist\*.exe
-          Rename-Item $exe.FullName "DownConv-${{ github.ref_name }}-win64.exe"
-          Move-Item "dist\DownConv-${{ github.ref_name }}-win64.exe" .
+          $ver = "${{ github.ref_name }}" -replace '^v',''
+          echo "VERSION=$ver" >> $env:GITHUB_OUTPUT
+
+      - name: Install Inno Setup
+        run: choco install innosetup -y
+
+      - name: Build installer
+        run: |
+          $ver = "${{ steps.version.outputs.VERSION }}"
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" /DMyAppVersion=$ver installer\DownConv.iss
+
+      - name: Prepare artifacts
+        run: |
+          $tag = "${{ github.ref_name }}"
+          $ver = "${{ steps.version.outputs.VERSION }}"
+          Rename-Item dist\DownConv.exe "DownConv-$tag-win64.exe"
+          Move-Item "dist\DownConv-$tag-win64.exe" .
+          Move-Item "dist\DownConv-Setup-$ver.exe" .
 
       - name: Upload to Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_name }}
-          files: DownConv-${{ github.ref_name }}-win64.exe
+          files: |
+            DownConv-${{ github.ref_name }}-win64.exe
+            DownConv-Setup-${{ steps.version.outputs.VERSION }}.exe
           generate_release_notes: true
-
-  build-macos:
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install pyinstaller
-
-      - name: Download FFmpeg for bundle
-        run: |
-          # BtbN non ha build macOS; evermeet.cx (Intel) funziona anche su arm64 via Rosetta
-          mkdir -p bundle/ffmpeg/bin
-          curl -sL -o ffmpeg.zip "https://evermeet.cx/ffmpeg/getrelease/ffmpeg/zip"
-          curl -sL -o ffprobe.zip "https://evermeet.cx/ffmpeg/getrelease/ffprobe/zip"
-          unzip -j -o ffmpeg.zip -d bundle/ffmpeg/bin/
-          unzip -j -o ffprobe.zip -d bundle/ffmpeg/bin/
-          chmod +x bundle/ffmpeg/bin/ffmpeg bundle/ffmpeg/bin/ffprobe
-          rm -f ffmpeg.zip ffprobe.zip
-
-      - name: Build .app
-        run: |
-          python -m PyInstaller --noconfirm --clean --onefile --windowed --name DownConv \
-            --paths=src \
-            --hidden-import=PySide6.QtCore --hidden-import=PySide6.QtGui --hidden-import=PySide6.QtWidgets \
-            --hidden-import=yt_dlp \
-            --add-data "src/downconv/resources:downconv/resources" \
-            --add-data "bundle/ffmpeg:ffmpeg" \
-            src/run_downconv.py
-
-      - name: Zip .app
-        run: |
-          ls -la dist/
-          cd dist && zip -r "../DownConv-${{ github.ref_name }}-macos.zip" DownConv.app && cd ..
-
-      - name: Upload to Release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ github.ref_name }}
-          files: DownConv-${{ github.ref_name }}-macos.zip

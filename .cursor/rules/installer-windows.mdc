@@ -1,0 +1,29 @@
+---
+description: Regole installer Windows - Inno Setup, convenzioni, CI
+globs: installer/*.iss, .github/workflows/release.yml, scripts/build*.ps1, docs/INSTALLER.md
+alwaysApply: false
+---
+
+# Installer Windows - Regole Team
+
+## Scelta vincolante
+- **Tool:** Inno Setup (e solo questo) per generare l'installer Windows.
+- Non introdurre NSIS, WiX o altri installer senza richiesta esplicita e aggiornamento di `docs/INSTALLER.md`.
+
+## File e convenzioni
+- Script: `installer/DownConv.iss`. Un solo script principale.
+- Versione: **mai** hardcoded nel `.iss`. In CI: `/DMyAppVersion=<version>` (estraere da tag, es. `v1.0.0` → `1.0.0`). In locale: passare a mano se serve.
+- Nome app in path/registry: "DownConv" (no caratteri speciali tipo &).
+- Output installer: `DownConv-Setup-{version}.exe`.
+
+## Contenuto installer
+- Copia exe PyInstaller in cartella app (es. `%LocalAppData%\Programs\DownConv`).
+- Shortcut: Menu Start (cartella DownConv); desktop opzionale (checkbox).
+- Registrazione disinstallazione (Installazione e disinstallazione programmi).
+- Non aggiungere logica custom (driver, servizi, firewall) senza specifica documentata.
+
+## CI (release.yml)
+- Dopo build PyInstaller: installare Inno Setup (Chocolatey), compilare `.iss` con versione dal tag, uploadare sia exe portable che `DownConv-Setup-{version}.exe` in Release.
+
+## Riferimento
+- Specifica e procedure: `docs/INSTALLER.md`.

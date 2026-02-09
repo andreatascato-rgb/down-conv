@@ -26,6 +26,7 @@ Agisci come **Team di Sviluppo Software d'Elite**:
 | `docs/WORKFLOW.md` | Procedura per ogni task |
 | `docs/GAP_ANALYSIS.md` | Lacune progetto, priorità, checklist pre-release |
 | `docs/DEVELOPMENT_GUIDE.md` | Setup, run, packaging |
+| `docs/INSTALLER.md` | Installer Windows (Inno Setup), convenzioni, CI |
 
 ---
 
@@ -40,6 +41,7 @@ Le regole in `.cursor/rules/` forniscono contesto persistente:
 - **yt-dlp-ffmpeg.mdc**: comandi FFmpeg, eccezioni, URL validation, performance, sub, retry
 - **error-handling-edges.mdc**: FFmpeg check, spazio disco, messaggi utente, first-run
 - **dev-workflow.mdc** (alwaysApply): variabili, STATUS, CHANGELOG, make check
+- **installer-windows.mdc**: Inno Setup, script `.iss`, versione da CI, vedi `docs/INSTALLER.md`
 
 ---
 

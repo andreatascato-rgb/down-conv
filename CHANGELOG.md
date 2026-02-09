@@ -4,6 +4,18 @@ Tutti i cambiamenti notevoli sono documentati qui. Formato [Keep a Changelog](ht
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-02-09
+
+### Added
+- Installer Windows (Inno Setup): DownConv-Setup-X.X.X.exe con wizard IT/EN, Menu Start, disinstallazione
+- Release: asset portable (DownConv-vX.X.X-win64.exe) + installer; solo Windows (build macOS rimossa)
+- FFmpeg: uso bundle a runtime se utente salta step onboarding (conversione funziona comunque)
+- README: sezione Primo avvio (installer vs portable, wizard, "Esegui comunque" se Windows blocca)
+
+### Changed
+- RELEASE_CHECKLIST e INSTALLER.md: coerenti con flusso Windows-only, FFmpeg in onboarding/bundle
+- Documentazione utente: requisiti Windows 10+, istruzioni scarica/avvio unificate
+
 ## [0.8.4] - 2026-02-09
 
 ### Fixed

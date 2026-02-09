@@ -11,12 +11,19 @@ Applicazione desktop professionale per **download video/audio da URL** (YouTube,
 ## Download (utenti finali)
 
 1. Vai a [Releases](https://github.com/andreatascato-rgb/down-conv/releases)
-2. Scarica l'asset per il tuo sistema:
-   - **Windows:** `DownConv-vX.X.X-win64.exe`
-   - **macOS:** `DownConv-vX.X.X-macos.zip` (estrai e apri `DownConv.app`)
-3. Avvia l'app — nessuna installazione Python o FFmpeg necessaria (FFmpeg incluso nel bundle)
+2. Scarica **DownConv-Setup-X.X.X.exe** (installer, consigliato) oppure **DownConv-vX.X.X-win64.exe** (portable)
+3. Se usi l'installer: esegui il setup; altrimenti avvia direttamente l'exe. Nessun Python o FFmpeg da installare (FFmpeg incluso)
 
-**Requisiti:** Windows 10+ / macOS 11+ (Intel o Apple Silicon)
+**Requisiti:** Windows 10+
+
+### Primo avvio
+
+1. **Installer:** doppio clic su `DownConv-Setup-X.X.X.exe` → scegli cartella (o lascia predefinita) → fine. L'app si apre dal Menu Start (cartella "DownConv").
+2. **Portable:** doppio clic su `DownConv-vX.X.X-win64.exe`. L'app parte senza installare nulla.
+3. **Configurazione iniziale (solo prima volta):** si apre un breve wizard (3 step) — cartella dove salvare i file (default: Download) e FFmpeg. Puoi cliccare "Installa FFmpeg" (consigliato per la conversione) o "Salta"; in ogni caso il download funziona e FFmpeg è già incluso nell'app.
+4. Dopo il wizard vedi la finestra principale: tab **Download** (URL → video/audio) e **Converter** (file audio → altro formato).
+
+Se Windows chiede conferma ("App non riconosciuta"): clicca "Altre informazioni" → "Esegui comunque". L'app non richiede diritti amministratore.
 
 ---
 

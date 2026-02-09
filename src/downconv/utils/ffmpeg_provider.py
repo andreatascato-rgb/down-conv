@@ -122,27 +122,34 @@ def _get_common_windows_paths() -> list[Path]:
 def get_ffmpeg_path() -> str | None:
     """
     Restituisce il path a ffmpeg, o None se non trovato.
-    Ordine: user_data_dir, PATH, PATH+registro utente, percorsi comuni Windows.
+    Ordine: user_data_dir, bundle (se frozen), PATH, registro, percorsi comuni.
     """
-    # 1. FFmpeg estratto nella cartella dati app
+    # 1. FFmpeg estratto nella cartella dati app (onboarding "Installa FFmpeg")
     app_dir = _get_app_ffmpeg_dir()
     app_ffmpeg = app_dir / "bin" / FFMPEG_BIN
     if app_ffmpeg.exists():
         return str(app_ffmpeg)
 
-    # 2. PATH di sistema/sessione
+    # 2. Bundle incluso nell'exe (utente che salta onboarding usa comunque FFmpeg)
+    bundled = _get_bundled_ffmpeg_dir()
+    if bundled:
+        exe = bundled / "bin" / FFMPEG_BIN
+        if exe.exists():
+            return str(exe)
+
+    # 3. PATH di sistema/sessione
     which = shutil.which("ffmpeg")
     if which:
         return which
 
-    # 3. Fallback: PATH utente da registro (app da shortcut spesso non lo eredita)
+    # 4. Fallback: PATH utente da registro (app da shortcut spesso non lo eredita)
     user_path = _get_user_path_from_registry()
     if user_path:
         which = _which_with_path("ffmpeg", user_path)
         if which:
             return which
 
-    # 4. Percorsi comuni (Chocolatey, Scoop, Winget, install manuale)
+    # 5. Percorsi comuni (Chocolatey, Scoop, Winget, install manuale)
     for bin_dir in _get_common_windows_paths():
         exe = bin_dir / FFMPEG_BIN
         if exe.exists():
