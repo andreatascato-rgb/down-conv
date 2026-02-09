@@ -26,10 +26,11 @@ TAB_HIGHLIGHT_COLOR = QColor("#e0a020")  # Amber per "aggiornamento disponibile"
 
 
 class _PreloadWorker(QThread):
-    """Carica in background yt-dlp e moduli dei tab pesanti; al termine i tab sono pronti senza ritardo al click."""
+    """Preload yt-dlp e moduli tab in background; al termine i tab sono pronti al click."""
 
     def run(self) -> None:
         import yt_dlp  # noqa: F401 - carica per primo (più lento)
+
         from downconv.gui.tabs import convert_tab, settings_tab  # noqa: F401
 
 
@@ -75,7 +76,7 @@ class MainWindow(QMainWindow):
         QTimer.singleShot(100, self._start_preload)
 
     def _start_preload(self) -> None:
-        """Avvia caricamento in background di yt-dlp e moduli tab; al termine sostituisce i placeholder."""
+        """Avvia preload yt-dlp e moduli tab in background; sostituisce i placeholder."""
         if self._preload_worker is not None:
             return
         self._preload_worker = _PreloadWorker(self)
@@ -83,7 +84,7 @@ class MainWindow(QMainWindow):
         self._preload_worker.start()
 
     def _on_preload_done(self) -> None:
-        """Main thread: crea tab Converter/Impostazioni e sostituisce placeholder (così il click è istantaneo)."""
+        """Main thread: crea tab Converter/Impostazioni e sostituisce placeholder."""
         self._preload_worker = None
         if self._convert_tab is None:
             from .tabs.convert_tab import ConvertTab as CT
@@ -139,9 +140,7 @@ class MainWindow(QMainWindow):
             msg = QMessageBox(self)
             msg.setIcon(QMessageBox.Icon.Information)
             msg.setWindowTitle("Aggiornamento disponibile")
-            msg.setText(
-                f"Versione {result.version} disponibile.\n\nVai in Aiuto per scaricarla."
-            )
+            msg.setText(f"Versione {result.version} disponibile.\n\nVai in Aiuto per scaricarla.")
             msg.exec()
         else:
             bar.setTabTextColor(AIUTO_TAB_INDEX, bar.palette().color(bar.foregroundRole()))
