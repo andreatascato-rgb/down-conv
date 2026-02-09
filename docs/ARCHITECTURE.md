@@ -113,7 +113,7 @@ down&conv/
 ### 4.3 Avvio, single instance e aggiornamenti
 1. `main.py`: dopo `QApplication`, `try_activate_existing_instance()`; se un'istanza è già in esecuzione → invia "show" e esce (una sola finestra).
 2. Prima istanza: `create_single_instance_server()` in ascolto; `MainWindow` con tab Download, Converter, Impostazioni, **Aiuto**.
-3. All'avvio: `UpdateCheckWorker` (QThread) interroga GitHub API; se c'è aggiornamento → tab Aiuto evidenziata (colore), in tab: pulsante **Aggiorna** (procedura guidata); in tab Aiuto anche **Apri cartella log** e **Segnala un bug** (issue precompilata via `report_bug.get_report_bug_url()`).
+3. All'avvio: `UpdateCheckWorker` (QThread) interroga GitHub API; se c'è aggiornamento → tab Aiuto evidenziata (label "Aiuto ●", colore amber), messaggio modale "È disponibile la versione X", in tab: pulsante **Aggiorna** (procedura guidata); in tab Aiuto anche **Apri cartella log** e **Segnala un bug** (issue precompilata via `report_bug.get_report_bug_url()`).
 4. Crash: `excepthook` mostra dialog con **Apri cartella log** e **Segnala questo errore** (issue con eccezione nel body).
 
 ---

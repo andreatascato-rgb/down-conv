@@ -6,6 +6,11 @@ Tutti i cambiamenti notevoli sono documentati qui. Formato [Keep a Changelog](ht
 
 ### (nessun cambiamento in sviluppo)
 
+## [1.0.3] - 2026-02-10
+
+### Added
+- Evidenza aggiornamento disponibile: tab Aiuto diventa "Aiuto ●" con colore amber; messaggio all'avvio "È disponibile la versione X" con invito ad andare in Aiuto
+
 ## [1.0.2] - 2026-02-10
 
 ### Changed

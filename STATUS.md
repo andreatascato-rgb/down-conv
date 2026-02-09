@@ -12,14 +12,15 @@
 
 ## Pronto per commit / push / release
 
-- [x] Release 1.0.2: avvio più rapido (preload background, lazy yt-dlp, tab lazy + preload)
-- [x] Documentazione allineata: CHANGELOG [1.0.2], STATUS, version in __init__ e pyproject
+- [x] Release 1.0.3: evidenza aggiornamento (tab Aiuto ●, messaggio avvio)
+- [x] Documentazione allineata: CHANGELOG [1.0.3], STATUS, version in __init__ e pyproject
 - [x] `.\scripts\check.ps1` (ruff + pytest) passano
 
 ---
 
 ## Done
 
+- [x] **Release 1.0.3:** Evidenza aggiornamento — tab Aiuto "Aiuto ●" colore amber, messaggio all'avvio se nuova versione disponibile
 - [x] **Release 1.0.2:** Avvio più rapido — preload in background (yt-dlp + tab), lazy import engine, cursori dopo show
 - [x] **Release 1.0.1:** Single instance, tab Aiuto (aggiornamenti, log, segnala bug), report bug issue precompilata, dipendenze pinnate
 - [x] **Release 1.0.0:** Windows-only, installer Inno Setup (portable + Setup.exe), FFmpeg in onboarding/bundle, doc coerente

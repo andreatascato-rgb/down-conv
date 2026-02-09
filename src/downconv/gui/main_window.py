@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 from PySide6.QtCore import QThread, QTimer
 from PySide6.QtGui import QColor, QIcon
-from PySide6.QtWidgets import QMainWindow, QTabWidget, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QMainWindow, QMessageBox, QTabWidget, QVBoxLayout, QWidget
 
 from ..utils.paths import get_app_icon_path
 from ..utils.update_check import UpdateCheckWorker, UpdateResult
@@ -18,6 +18,8 @@ if TYPE_CHECKING:
     from .tabs.settings_tab import SettingsTab
 
 AIUTO_TAB_INDEX = 3
+AIUTO_TAB_LABEL = "Aiuto"
+AIUTO_TAB_LABEL_UPDATE = "Aiuto ●"
 CONVERT_TAB_INDEX = 1
 SETTINGS_TAB_INDEX = 2
 TAB_HIGHLIGHT_COLOR = QColor("#e0a020")  # Amber per "aggiornamento disponibile"
@@ -58,7 +60,7 @@ class MainWindow(QMainWindow):
         self._tabs.addTab(self._download_tab, "Download")
         self._tabs.addTab(QWidget(), "Converter")  # placeholder: sostituito al primo switch
         self._tabs.addTab(QWidget(), "Impostazioni")  # placeholder
-        self._tabs.addTab(self._aiuto_tab, "Aiuto")
+        self._tabs.addTab(self._aiuto_tab, AIUTO_TAB_LABEL)
 
         self._tabs.currentChanged.connect(self._on_tab_changed)
         self._aiuto_tab.check_requested.connect(self._start_update_check)
@@ -131,10 +133,19 @@ class MainWindow(QMainWindow):
     def _on_update_check_result(self, result: UpdateResult) -> None:
         self._aiuto_tab.set_update_result(result)
         bar = self._tabs.tabBar()
-        if result.available:
+        if result.available and result.version:
             bar.setTabTextColor(AIUTO_TAB_INDEX, TAB_HIGHLIGHT_COLOR)
+            self._tabs.setTabText(AIUTO_TAB_INDEX, AIUTO_TAB_LABEL_UPDATE)
+            msg = QMessageBox(self)
+            msg.setIcon(QMessageBox.Icon.Information)
+            msg.setWindowTitle("Aggiornamento disponibile")
+            msg.setText(
+                f"Versione {result.version} disponibile.\n\nVai in Aiuto per scaricarla."
+            )
+            msg.exec()
         else:
             bar.setTabTextColor(AIUTO_TAB_INDEX, bar.palette().color(bar.foregroundRole()))
+            self._tabs.setTabText(AIUTO_TAB_INDEX, AIUTO_TAB_LABEL)
 
     def _on_update_worker_finished(self) -> None:
         self._update_worker = None

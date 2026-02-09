@@ -57,7 +57,7 @@
 
 1. ✅ **Dipendenze pinnate**  
 2. ✅ **Single instance** — `utils/single_instance.py`, hook in `main.py`  
-3. ✅ **Aggiornamenti** — check avvio, tab Aiuto evidenziata, Aggiorna + Riprova in tab  
+3. ✅ **Aggiornamenti** — check avvio, tab Aiuto evidenziata (label + colore), messaggio all'avvio, Aggiorna + Riprova in tab  
 4. ✅ **Crash reporting** — `utils/report_bug.py`, dialog crash con Apri log + Segnala errore, tab Aiuto Segnala bug
 
 Dopo ogni punto: `.\scripts\check.ps1`, CHANGELOG/STATUS aggiornati. **Stato:** pronto per commit, push e release.

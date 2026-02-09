@@ -53,7 +53,7 @@ pip install --upgrade "yt-dlp[default] @ git+https://github.com/yt-dlp/yt-dlp.gi
 | `gui/tabs/download_tab.py` | UI download URL (lista coda, Tipo+Qualità/Formato), DownloadQueueWorker |
 | `gui/tabs/convert_tab.py` | UI conversione batch, banner FFmpeg, drag-drop |
 | `gui/tabs/settings_tab.py` | Impostazioni (output, formati, CTA FFmpeg) |
-| `gui/tabs/aiuto_tab.py` | Tab Aiuto: aggiornamenti (check avvio, Aggiorna/Riprova), Apri cartella log, Segnala bug |
+| `gui/tabs/aiuto_tab.py` | Tab Aiuto: aggiornamenti (check avvio, evidenza tab "Aiuto ●" e messaggio se disponibile, Aggiorna/Riprova), Apri cartella log, Segnala bug |
 | `services/download_service.py` | DownloadWorker (singolo) |
 | `services/download_queue_service.py` | DownloadQueueWorker, coda sequenziale |
 | `services/conversion_service.py` | ConversionWorker, batch FFmpeg |
