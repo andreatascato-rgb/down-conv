@@ -53,7 +53,7 @@ class FfmpegEngine:
         self,
         input_path: Path,
         output_path: Path,
-        output_format: str,  # "mp3", "flac", "m4a", "wav", "ogg", "opus"
+        output_format: str,  # "mp3", "flac", "m4a", "wav"
         quality: str = "lossless",  # "lossless" | "192k" | "320k"
         progress_callback: Callable[[float], None] | None = None,
     ) -> bool:

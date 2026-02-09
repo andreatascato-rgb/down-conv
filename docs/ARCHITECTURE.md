@@ -7,7 +7,7 @@
 ## 1. Panoramica
 
 Down&Conv è un'applicazione desktop professionale per:
-- **Download Video/Audio da URL** (yt-dlp, tutti i siti supportati, risoluzioni massime)
+- **Download Video/Audio da URL** (yt-dlp, tutti i siti supportati, qualità video max/1080p/720p/4K)
 - **Conversione Audio Batch** (FFmpeg, metadata preservation, lossless, multithread)
 
 L'architettura segue i principi: **modularità**, **non-blocking UI**, **separazione delle responsabilità**.
@@ -30,9 +30,9 @@ L'architettura segue i principi: **modularità**, **non-blocking UI**, **separaz
 ┌──────────────────────────┼──────────────────────────────────────┐
 │                    Service Layer                                 │
 │  ┌─────────────────────┐  ┌─────────────────────┐                │
-│  │ DownloadService     │  │ ConversionService   │                │
-│  │ - QThread Worker    │  │ - QThread Worker    │                │
-│  │ - progress_hooks    │  │ - ThreadPoolExecutor │                │
+│  │ DownloadQueueWorker │  │ ConversionWorker     │                │
+│  │ - QThread, coda URL │  │ - QThread Worker     │                │
+│  │ - sequenziale N/M   │  │ - ThreadPoolExecutor │                │
 │  └──────────┬──────────┘  └──────────┬──────────┘                │
 └─────────────┼─────────────────────────┼──────────────────────────┘
               │                         │
@@ -70,6 +70,7 @@ down&conv/
 │       │       ├── convert_tab.py
 │       │       └── settings_tab.py
 │       ├── services/
+│       │   ├── download_queue_service.py
 │       │   ├── download_service.py
 │       │   └── conversion_service.py
 │       ├── engines/
@@ -77,6 +78,7 @@ down&conv/
 │       │   └── ffmpeg_engine.py
 │       └── utils/
 │           ├── config.py
+│           ├── disk_check.py
 │           ├── ffmpeg_provider.py
 │           ├── logging_config.py
 │           └── paths.py
@@ -91,10 +93,10 @@ down&conv/
 ## 4. Flussi Principali
 
 ### 4.1 Download da URL (yt-dlp)
-1. User inserisce URL (o drag-drop) → `DownloadTab`
-2. `DownloadTab` avvia `DownloadWorker` in `QThread`
-3. `DownloadWorker` usa `YoutubeDL` con `progress_hooks`
-4. Hook emette `Signal(dict)` → UI aggiorna progress bar
+1. User inserisce URL (o drag-drop) → `DownloadTab` (lista URL come Converter)
+2. `DownloadTab` avvia `DownloadQueueWorker` in `QThread`
+3. `DownloadQueueWorker` esegue download sequenziali via `YtdlpEngine`
+4. Progress `Signal(current, total, status)` → UI aggiorna N/M
 5. Completato → `finished` signal → UI notifica
 
 ### 4.2 Conversione Batch
@@ -112,7 +114,7 @@ down&conv/
 |-----------|-----------------|
 | **Non-blocking UI** | QThread + Worker QObject, mai I/O nel main thread |
 | **DRY** | Engines riutilizzabili, services orchestrano |
-| **Error handling** | try-except per layer, logging strutturato |
+| **Error handling** | try-except per layer, logging strutturato, pre-check spazio disco, messaggio ENOSPC |
 | **Testabilità** | Engines isolati, iniettabili |
 | **Packaging** | PyInstaller/Nuitka-ready, paths relativi |
 

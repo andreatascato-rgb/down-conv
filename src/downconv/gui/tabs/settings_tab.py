@@ -11,6 +11,7 @@ from PySide6.QtWidgets import (
     QFrame,
     QGroupBox,
     QHBoxLayout,
+    QLabel,
     QLineEdit,
     QMessageBox,
     QPushButton,
@@ -18,7 +19,16 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from ...utils.config import DEFAULT_SETTINGS, get_settings, save_settings
+from ...utils.config import (
+    CONVERT_FORMATS,
+    CONVERT_QUALITY_OPTIONS,
+    DEFAULT_SETTINGS,
+    DOWNLOAD_AUDIO_FORMATS,
+    DOWNLOAD_VIDEO_FORMATS,
+    DOWNLOAD_VIDEO_QUALITIES,
+    get_settings,
+    save_settings,
+)
 from ...utils.ffmpeg_provider import can_extract_from_bundle, check_ffmpeg_available
 
 
@@ -90,25 +100,33 @@ class SettingsTab(QWidget):
         return group
 
     def _build_download_section(self) -> QGroupBox:
-        """Sezione Download: formato default (include qualità per audio)."""
+        """Sezione Download: tipo (Video/Audio) + qualità e formato default."""
         group = QGroupBox("Download")
         form = QFormLayout(group)
 
-        self._download_format_combo = QComboBox()
-        self._download_format_combo.addItems(
-            [
-                "Video MP4 (max qualità)",
-                "MP3 (320k)",
-                "MP3 (192k)",
-                "FLAC",
-                "M4A",
-                "WAV",
-                "OGG",
-                "OPUS",
-                "Nativo (webm/m4a)",
-            ]
-        )
-        form.addRow("Formato default:", self._download_format_combo)
+        dl_type_row = QHBoxLayout()
+        self._download_type_combo = QComboBox()
+        self._download_type_combo.addItems(["Video", "Audio"])
+        dl_type_row.addWidget(self._download_type_combo)
+        form.addRow("Tipo default:", dl_type_row)
+
+        dl_qual_row = QHBoxLayout()
+        self._download_video_quality_combo = QComboBox()
+        self._download_video_quality_combo.addItems(list(DOWNLOAD_VIDEO_QUALITIES))
+        dl_qual_row.addWidget(self._download_video_quality_combo)
+        form.addRow("Qualità video:", dl_qual_row)
+
+        dl_vfmt_row = QHBoxLayout()
+        self._download_video_format_combo = QComboBox()
+        self._download_video_format_combo.addItems(list(DOWNLOAD_VIDEO_FORMATS))
+        dl_vfmt_row.addWidget(self._download_video_format_combo)
+        form.addRow("Formato video:", dl_vfmt_row)
+
+        dl_fmt_row = QHBoxLayout()
+        self._download_audio_format_combo = QComboBox()
+        self._download_audio_format_combo.addItems(list(DOWNLOAD_AUDIO_FORMATS))
+        dl_fmt_row.addWidget(self._download_audio_format_combo)
+        form.addRow("Formato audio:", dl_fmt_row)
 
         self._overwrite_download_cb = QCheckBox("Sovrascrivi file esistenti")
         form.addRow("", self._overwrite_download_cb)
@@ -121,13 +139,14 @@ class SettingsTab(QWidget):
         form = QFormLayout(group)
 
         self._format_combo = QComboBox()
-        self._format_combo.addItems(["MP3", "FLAC", "M4A", "WAV", "OGG", "OPUS"])
+        self._format_combo.addItems(list(CONVERT_FORMATS))
         form.addRow("Formato default:", self._format_combo)
 
+        self._quality_label = QLabel("Qualità MP3:")
         self._quality_combo = QComboBox()
-        self._quality_combo.addItems(["lossless", "320k", "192k", "128k"])
+        self._quality_combo.addItems(list(CONVERT_QUALITY_OPTIONS))
         self._format_combo.currentTextChanged.connect(self._on_format_changed)
-        form.addRow("Qualità default:", self._quality_combo)
+        form.addRow(self._quality_label, self._quality_combo)
 
         self._overwrite_convert_cb = QCheckBox("Sovrascrivi file esistenti")
         form.addRow("", self._overwrite_convert_cb)
@@ -155,13 +174,11 @@ class SettingsTab(QWidget):
         self.ffmpeg_install_completed.emit()
 
     def _on_format_changed(self) -> None:
-        """Disabilita qualità per formati lossless."""
+        """Nasconde qualità per FLAC/WAV/M4A (sempre lossless). Solo MP3 mostra bitrate."""
         fmt = self._format_combo.currentText().strip().lower()
-        if fmt in ("flac", "wav", "m4a"):
-            self._quality_combo.setCurrentText("lossless")
-            self._quality_combo.setEnabled(False)
-        else:
-            self._quality_combo.setEnabled(True)
+        is_lossless = fmt in ("flac", "wav", "m4a")
+        self._quality_label.setVisible(not is_lossless)
+        self._quality_combo.setVisible(not is_lossless)
 
     def _browse_dir(self, line_edit: QLineEdit) -> None:
         start = line_edit.text().strip() or str(Path.home())
@@ -174,20 +191,43 @@ class SettingsTab(QWidget):
         s = get_settings()
         self._download_edit.setText(s.get("output_dir_download", ""))
         self._convert_edit.setText(s.get("output_dir_convert", ""))
-        self._download_format_combo.setCurrentIndex(
-            min(s.get("download_format_index", 0), self._download_format_combo.count() - 1)
+        self._download_type_combo.setCurrentIndex(
+            0 if s.get("download_type", "video") == "video" else 1
+        )
+        self._download_video_quality_combo.setCurrentIndex(
+            min(s.get("download_video_quality_index", 0), len(DOWNLOAD_VIDEO_QUALITIES) - 1)
+        )
+        self._download_video_format_combo.setCurrentIndex(
+            min(s.get("download_video_format_index", 0), len(DOWNLOAD_VIDEO_FORMATS) - 1)
+        )
+        self._download_audio_format_combo.setCurrentIndex(
+            min(s.get("download_audio_format_index", 0), len(DOWNLOAD_AUDIO_FORMATS) - 1)
         )
         self._overwrite_download_cb.setChecked(s.get("overwrite_download", False))
         fmt = s.get("convert_format", "mp3")
         self._format_combo.setCurrentText(fmt.upper())
-        if self._quality_combo.isEnabled():
-            self._quality_combo.setCurrentText(s.get("convert_quality", "320k"))
+        q = s.get("convert_quality", "320k")
+        if q not in CONVERT_QUALITY_OPTIONS:
+            q = "320k"  # migrazione da "lossless"
+        self._quality_combo.setCurrentText(q)
+        self._on_format_changed()  # nasconde qualità se formato lossless
         self._overwrite_convert_cb.setChecked(s.get("overwrite_convert", True))
 
     def _restore_defaults(self) -> None:
         self._download_edit.setText(DEFAULT_SETTINGS["output_dir_download"])
         self._convert_edit.setText(DEFAULT_SETTINGS["output_dir_convert"])
-        self._download_format_combo.setCurrentIndex(DEFAULT_SETTINGS["download_format_index"])
+        self._download_type_combo.setCurrentIndex(
+            0 if DEFAULT_SETTINGS["download_type"] == "video" else 1
+        )
+        self._download_video_quality_combo.setCurrentIndex(
+            DEFAULT_SETTINGS["download_video_quality_index"]
+        )
+        self._download_video_format_combo.setCurrentIndex(
+            DEFAULT_SETTINGS["download_video_format_index"]
+        )
+        self._download_audio_format_combo.setCurrentIndex(
+            DEFAULT_SETTINGS["download_audio_format_index"]
+        )
         self._overwrite_download_cb.setChecked(DEFAULT_SETTINGS["overwrite_download"])
         self._format_combo.setCurrentText("MP3")
         self._quality_combo.setCurrentText("320k")
@@ -210,10 +250,19 @@ class SettingsTab(QWidget):
         updates = {
             "output_dir_download": download or DEFAULT_SETTINGS["output_dir_download"],
             "output_dir_convert": convert or DEFAULT_SETTINGS["output_dir_convert"],
-            "download_format_index": self._download_format_combo.currentIndex(),
+            "download_type": (
+                "video" if self._download_type_combo.currentIndex() == 0 else "audio"
+            ),
+            "download_video_quality_index": self._download_video_quality_combo.currentIndex(),
+            "download_video_format_index": self._download_video_format_combo.currentIndex(),
+            "download_audio_format_index": self._download_audio_format_combo.currentIndex(),
             "overwrite_download": self._overwrite_download_cb.isChecked(),
             "convert_format": self._format_combo.currentText().strip().lower(),
-            "convert_quality": self._quality_combo.currentText(),
+            "convert_quality": (
+                self._quality_combo.currentText()
+                if self._quality_combo.currentText() in CONVERT_QUALITY_OPTIONS
+                else "320k"
+            ),
             "overwrite_convert": self._overwrite_convert_cb.isChecked(),
         }
         if save_settings(updates):

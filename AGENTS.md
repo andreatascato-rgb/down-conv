@@ -24,6 +24,7 @@ Agisci come **Team di Sviluppo Software d'Elite**:
 | `docs/API_DESIGN.md` | API interne, signatures |
 | `docs/PROJECT_SPEC.md` | Requisiti funzionali |
 | `docs/WORKFLOW.md` | Procedura per ogni task |
+| `docs/GAP_ANALYSIS.md` | Lacune progetto, priorità, checklist pre-release |
 | `docs/DEVELOPMENT_GUIDE.md` | Setup, run, packaging |
 
 ---

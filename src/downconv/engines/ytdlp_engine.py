@@ -1,11 +1,15 @@
 """Engine yt-dlp per download video/audio da URL supportati."""
 
+import errno
 import logging
 import shutil
 from collections.abc import Callable
 from pathlib import Path
 
 from yt_dlp import YoutubeDL
+from yt_dlp.utils import PostProcessingError
+
+from ..utils.disk_check import MSG_DISK_FULL, is_disk_full_error
 
 logger = logging.getLogger(__name__)
 
@@ -47,6 +51,7 @@ class YtdlpEngine:
             "quiet": True,
             "no_warnings": True,
             "extract_flat": False,
+            "socket_timeout": 30,
         }
         try:
             with YoutubeDL(opts) as ydl:
@@ -54,6 +59,37 @@ class YtdlpEngine:
         except Exception as e:
             logger.exception("Errore extract_info: %s", e)
             return None
+
+    def get_best_format_for_url(self, url: str) -> tuple[str, list | None]:
+        """Configurazione ottimale per URL: analizza sorgente e sceglie formato migliore.
+        Ritorna (format_string, postprocessors)."""
+        info = self.extract_info(url, download=False)
+        if not info:
+            return "bestaudio/best", None
+        extractor = (info.get("extractor") or info.get("extractor_key") or "").lower()
+        # YouTube ecc.: Nativo (no transcodifica) — sorgente già lossy
+        if extractor.startswith("youtube") or extractor.startswith("youtu"):
+            return "bestaudio/best", None
+        # Bandcamp: preferisce FLAC se disponibile (spesso lossless)
+        if "bandcamp" in extractor:
+            return "bestaudio[ext=flac]/bestaudio[ext=wav]/bestaudio[ext=m4a]/bestaudio/best", None
+        # SoundCloud, Vimeo, altri: Nativo (best senza transcodifica)
+        if "soundcloud" in extractor or "vimeo" in extractor:
+            return "bestaudio/best", None
+        # Default: preferisce lossless nativi se disponibili
+        return "bestaudio[ext=flac]/bestaudio[ext=wav]/bestaudio[ext=m4a]/bestaudio/best", None
+
+    def get_best_video_format_for_url(self, url: str) -> tuple[str, list | None]:
+        """Configurazione ottimale per URL video: analizza sorgente, ritorna formato migliore."""
+        info = self.extract_info(url, download=False)
+        if not info:
+            return "bestvideo+bestaudio/best", None
+        extractor = (info.get("extractor") or info.get("extractor_key") or "").lower()
+        # YouTube, Vimeo, ecc.: best video+audio disponibile
+        if extractor.startswith("youtube") or "vimeo" in extractor:
+            return "bestvideo+bestaudio/best", None
+        # Default: migliore disponibile
+        return "bestvideo+bestaudio/best", None
 
     def download(
         self,
@@ -63,6 +99,7 @@ class YtdlpEngine:
         progress_callback: Callable[[dict], None] | None = None,
         overwrite: bool | None = None,
         postprocessors: list | None = None,
+        merge_format: str = "mp4",
     ) -> tuple[bool, str]:
         """Download. Ritorna (success, error_message). postprocessors per conversione audio."""
         overwrite = overwrite if overwrite is not None else self.overwrite
@@ -70,10 +107,11 @@ class YtdlpEngine:
         output_dir.mkdir(parents=True, exist_ok=True)
 
         outtmpl = str(output_dir / "%(title)s.%(ext)s")
+        needs_merge = "+" in format
         opts: dict = {
             "outtmpl": outtmpl,
             "format": format,
-            "merge_output_format": "mp4",  # Forza MP4 quando merge video+audio
+            "merge_output_format": merge_format.lower(),
             "noplaylist": True,  # Scarica solo il singolo video, non la playlist
             "quiet": True,
             "no_warnings": True,
@@ -104,7 +142,31 @@ class YtdlpEngine:
             with YoutubeDL(opts) as ydl:
                 ydl.download([url])
             return True, ""
+        except PostProcessingError as e:
+            if needs_merge:
+                logger.warning("Merge fallito con %s, retry con best: %s", format, e)
+                opts["format"] = "best"
+                opts["merge_output_format"] = merge_format.lower()
+                try:
+                    with YoutubeDL(opts) as ydl:
+                        ydl.download([url])
+                    return True, ""
+                except Exception as retry_e:
+                    msg = _get_user_message(retry_e)
+                    logger.exception("Retry con best fallito: %s", retry_e)
+                    return False, msg
+            msg = _get_user_message(e)
+            logger.exception("Download fallito: %s", e)
+            return False, msg
+        except OSError as e:
+            if e.errno == errno.ENOSPC or is_disk_full_error(e):
+                return False, MSG_DISK_FULL
+            msg = _get_user_message(e)
+            logger.exception("Download fallito: %s", e)
+            return False, msg
         except Exception as e:
+            if is_disk_full_error(e):
+                return False, MSG_DISK_FULL
             msg = _get_user_message(e)
             logger.exception("Download fallito: %s", e)
             return False, msg

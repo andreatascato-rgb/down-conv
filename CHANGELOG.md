@@ -4,6 +4,16 @@ Tutti i cambiamenti notevoli sono documentati qui. Formato [Keep a Changelog](ht
 
 ## [Unreleased]
 
+## [0.8.4] - 2026-02-09
+
+### Fixed
+- Download audio Ottimale non partiva: rimosso extract_info pre-download che bloccava — ora usa bestaudio/best direttamente
+
+### Changed
+- Video: merge MP4 (compatibilità dispositivi). Formato contenitore (MP4/MKV) in Impostazioni. Ottimale = bestvideo+bestaudio
+- Download: un solo dropdown Formato (video e audio) come richiesto
+- Messaggi progress download più user-friendly (1 di 3 | 45% | speed | fine tra ETA), separatori ASCII
+
 ## [0.8.3] - 2026-02-09
 
 ### Added

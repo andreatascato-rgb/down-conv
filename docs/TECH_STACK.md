@@ -29,6 +29,10 @@
 - Drag-and-drop nativo
 - Packaging con PyInstaller/Nuitka documentato
 
+**Accessibilità (G7):**
+- Tab order: `setTabOrder` su widget principali
+- Contrasto WCAG AA: testo #d4d4d4 su #1e1e1e (≈14:1), secondary #8c8c8c (≈6.7:1), accent #0d7377 su bianco (≈8.7:1) — tutti >4.5:1
+
 ---
 
 ## 3. Motori
@@ -38,9 +42,9 @@
 - **Default:** `yt-dlp[default]>=2024.1.0` (requirements.txt)
 - **Opzionale nightly:** `pip install "yt-dlp[default] @ git+https://github.com/yt-dlp/yt-dlp.git@master"` — utile se YouTube cambia API
 - **API:** `YoutubeDL` class, `extract_info()`, `download()`, `progress_hooks`
-- **Formati massima qualità:**
-  - Video: `bestvideo+bestaudio/best` o `bestvideo[height<=4320]+bestaudio/best`
-  - Audio: `bestaudio/best` + postprocessor `FFmpegExtractAudio` (mp3, m4a, wav, opus)
+- **Formati:**
+  - Video: Ottimale, 1080p, 720p, 4K — Ottimale=extract_info per-URL; `bestvideo+bestaudio/best` o `bv*[height<=N]+ba/best`
+  - Audio: Ottimale, FLAC, WAV, M4A, MP3 (320k/192k), Nativo — Ottimale=extract_info per URL, mapping per extractor (YouTube→Nativo, Bandcamp→FLAC); `DOWNLOAD_AUDIO_FORMATS` in config.py
 
 ### 3.2 FFmpeg
 

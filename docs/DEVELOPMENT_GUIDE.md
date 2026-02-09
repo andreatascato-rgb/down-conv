@@ -50,14 +50,15 @@ pip install --upgrade "yt-dlp[default] @ git+https://github.com/yt-dlp/yt-dlp.gi
 | `app.py` | Configurazione app, stili dark |
 | `gui/main_window.py` | Finestra principale, tab container |
 | `gui/dialogs/onboarding_wizard.py` | Wizard 3 step (Benvenuto, Output, FFmpeg) |
-| `gui/tabs/download_tab.py` | UI download URL, connessione DownloadWorker |
+| `gui/tabs/download_tab.py` | UI download URL (lista coda, Tipo+Qualità/Formato), DownloadQueueWorker |
 | `gui/tabs/convert_tab.py` | UI conversione batch, banner FFmpeg, drag-drop |
 | `gui/tabs/settings_tab.py` | Impostazioni (output, formati, CTA FFmpeg) |
-| `services/download_service.py` | DownloadWorker, orchestrazione yt-dlp |
+| `services/download_service.py` | DownloadWorker (singolo) |
+| `services/download_queue_service.py` | DownloadQueueWorker, coda sequenziale |
 | `services/conversion_service.py` | ConversionWorker, batch FFmpeg |
 | `engines/ytdlp_engine.py` | Wrapper YoutubeDL |
 | `engines/ffmpeg_engine.py` | Wrapper FFmpeg subprocess |
-| `utils/config.py` | Config JSON, preferenze utente |
+| `utils/config.py` | Config JSON, preferenze utente; costanti `DOWNLOAD_AUDIO_FORMATS`, `CONVERT_FORMATS` (gerarchia formati) |
 | `utils/ffmpeg_provider.py` | Ricerca FFmpeg, estrazione da bundle |
 | `utils/logging_config.py` | Setup logging |
 | `utils/paths.py` | Path app data, download, etc. |
@@ -122,6 +123,8 @@ pytest tests/ -v
 | Format | `make format` o `ruff format src/` |
 | Test | `make test` o `pytest tests/` |
 | Check completo | `make check` o `.\scripts\check.ps1` |
+
+**Windows senza make:** Se `make` non è installato, usare `.\scripts\check.ps1` per il check completo.
 
 ## 8. Checklist Pre-Release
 

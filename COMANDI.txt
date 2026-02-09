@@ -2,6 +2,7 @@
 
 ## Sviluppo
 .\scripts\run.ps1
+.\scripts\check.ps1
 
 ## Release (procedura completa)
 # 1. Commit e push codice

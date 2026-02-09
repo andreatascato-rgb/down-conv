@@ -22,7 +22,7 @@ from PySide6.QtWidgets import (
 from ...engines.ffmpeg_engine import check_ffmpeg_available
 from ...gui.dialogs.onboarding_ffmpeg_step import OnboardingFfmpegStep
 from ...services.conversion_service import ConversionWorker
-from ...utils.config import get_settings
+from ...utils.config import CONVERT_FORMATS, CONVERT_QUALITY_OPTIONS, get_settings
 from ...utils.ffmpeg_provider import can_extract_from_bundle
 
 
@@ -122,21 +122,12 @@ class ConvertTab(QWidget):
         from PySide6.QtWidgets import QComboBox
 
         self._format_combo = QComboBox()
-        self._format_combo.addItems(
-            [
-                "MP3",
-                "FLAC",
-                "M4A",
-                "WAV",
-                "OGG",
-                "OPUS",
-            ]
-        )
+        self._format_combo.addItems(list(CONVERT_FORMATS))
         opt_layout.addWidget(self._format_combo)
-        self._quality_label = QLabel("Qualità:")
+        self._quality_label = QLabel("Qualità (MP3):")
         opt_layout.addWidget(self._quality_label)
         self._quality_combo = QComboBox()
-        self._quality_combo.addItems(["lossless", "320k", "192k", "128k"])
+        self._quality_combo.addItems(list(CONVERT_QUALITY_OPTIONS))
         opt_layout.addWidget(self._quality_combo)
         self._format_combo.currentIndexChanged.connect(self._on_format_changed)
         layout.addLayout(opt_layout)
@@ -208,21 +199,19 @@ class ConvertTab(QWidget):
     def _apply_convert_defaults(self) -> None:
         """Applica formato, qualità e overwrite da config."""
         fmt = self._default_format
-        if fmt in ("mp3", "flac", "m4a", "wav", "ogg", "opus"):
-            idx = ["mp3", "flac", "m4a", "wav", "ogg", "opus"].index(fmt)
+        fmt_lower = (fmt or "mp3").lower()
+        if fmt_lower in (f.lower() for f in CONVERT_FORMATS):
+            idx = next(i for i, f in enumerate(CONVERT_FORMATS) if f.lower() == fmt_lower)
             self._format_combo.setCurrentIndex(idx)
-        if self._default_quality in ("lossless", "320k", "192k", "128k"):
+        if self._default_quality in CONVERT_QUALITY_OPTIONS:
             self._quality_combo.setCurrentText(self._default_quality)
 
     def _on_format_changed(self) -> None:
-        """Disabilita qualità per formati lossless (FLAC, WAV, M4A)."""
+        """Nasconde qualità per FLAC/WAV/M4A (sempre lossless). Solo MP3 mostra bitrate."""
         fmt = self._format_combo.currentText().strip().lower()
-        lossless_formats = ("flac", "wav", "m4a")
-        is_lossless = fmt in lossless_formats
-        self._quality_combo.setEnabled(not is_lossless)
-        self._quality_label.setEnabled(not is_lossless)
-        if is_lossless:
-            self._quality_combo.setCurrentText("lossless")
+        is_lossless = fmt in ("flac", "wav", "m4a")
+        self._quality_combo.setVisible(not is_lossless)
+        self._quality_label.setVisible(not is_lossless)
 
     def _update_file_actions_state(self) -> None:
         """Abilita Rimuovi e Svuota solo quando ci sono file (stile colorato)."""
@@ -315,7 +304,7 @@ class ConvertTab(QWidget):
         self._status_label.setText("Avvio conversione...")
 
         fmt = self._format_combo.currentText().strip().lower()
-        quality = self._quality_combo.currentText()
+        quality = "lossless" if fmt in ("flac", "wav", "m4a") else self._quality_combo.currentText()
 
         same_folder = self._same_folder_cb.isChecked()
         output_dir = Path(files[0]).parent if same_folder else self._output_dir
@@ -351,6 +340,7 @@ class ConvertTab(QWidget):
         out_dir = getattr(self, "_last_output_dir", None)
         if success:
             self._status_label.setText("Conversione completata!")
+            self._list.clear()
             if out_dir:
                 box = QMessageBox(self)
                 box.setIcon(QMessageBox.Icon.Information)

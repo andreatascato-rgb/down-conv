@@ -6,6 +6,7 @@ from pathlib import Path
 from PySide6.QtCore import QThread, Signal
 
 from ..engines.ffmpeg_engine import FfmpegEngine
+from ..utils.disk_check import check_disk_space, check_output_writable
 
 logger = logging.getLogger(__name__)
 
@@ -35,15 +36,23 @@ class ConversionWorker(QThread):
 
     def run(self) -> None:
         """Eseguito in QThread."""
+        output_dirs = [inp.parent for inp in self._files] if self._same_folder else None
+        output_dir = self._output_dir or (self._files[0].parent if self._files else Path("."))
+        ok, msg = check_output_writable(output_dir)
+        if not ok:
+            self.finished.emit(False, msg)
+            return
+        ok, msg = check_disk_space(output_dir)
+        if not ok:
+            self.finished.emit(False, msg)
+            return
+
         engine = FfmpegEngine()
 
         def on_progress(current: int, total: int, path: Path) -> None:
             if self.isInterruptionRequested():
                 return
             self.progress.emit(current, total, path.name)
-
-        output_dirs = [inp.parent for inp in self._files] if self._same_folder else None
-        output_dir = self._output_dir or (self._files[0].parent if self._files else Path("."))
 
         results = engine.convert_batch(
             self._files,

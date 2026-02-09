@@ -21,7 +21,7 @@ Il codice che **funziona** e che l'utente ha approvato è **stabile**. Non va to
 
 | Richiesta utente | Azione corretta |
 |------------------|-----------------|
-| "Aggiungi download sottotitoli" | Estendi `DownloadTab` / `YtdlpEngine` senza riscrivere download esistente |
+| "Aggiungi system tray" | Estendi `main_window` senza riscrivere struttura esistente |
 | "Fix progress bar" | Modifica solo la parte che causa il bug |
 | "Cambia colori tema" | Modifica solo DARK_QSS / stili |
 | (nessuna richiesta di refactor) | NON riscrivere classi, NON cambiare pattern architetturali |

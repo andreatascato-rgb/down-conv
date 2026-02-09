@@ -20,7 +20,7 @@
 ### 2.1 Build
 
 - [ ] **PyInstaller** produce `.exe` funzionante (`.\scripts\build.ps1` Win) / `.app` (`./scripts/build.sh` macOS)
-- [ ] Icona app inclusa nel bundle
+- [x] Icona app inclusa nel bundle (icon.ico, --icon PyInstaller)
 - [ ] yt-dlp e dipendenze incluse (hidden imports)
 - [ ] Test: eseguire `.exe` su PC pulito (senza Python)
 
@@ -32,13 +32,13 @@
 
 ### 2.3 GitHub Release
 
-- [ ] Workflow CI: build su tag/release
-- [ ] Artifact: `DownConv-0.4.1-win64.exe` (o simile)
-- [ ] Note rilascio da CHANGELOG
+- [x] Workflow CI: build su tag/release
+- [x] Artifact: `DownConv-vX.X.X-win64.exe` e `DownConv-vX.X.X-macos.zip`
+- [x] Note rilascio da CHANGELOG
 
 ### 2.4 Documentazione Utente
 
-- [ ] README: sezione "Download" con link Release
+- [x] README: sezione "Download" con link Release
 - [ ] Requisiti: Windows 10+, macOS 11+ (Intel/Apple Silicon)
 - [ ] Istruzioni minimo: scarica, avvia (FFmpeg incluso nel bundle)
 
@@ -67,23 +67,23 @@ pytest tests/ -q
 
 | File | Modifica |
 |------|----------|
-| `src/downconv/__init__.py` | `__version__ = "0.8.2"` |
-| `pyproject.toml` | `version = "0.8.2"` |
+| `src/downconv/__init__.py` | `__version__ = "0.8.4"` |
+| `pyproject.toml` | `version = "0.8.4"` |
 
 ### Passo 3 — Finalizza CHANGELOG
 
 In `CHANGELOG.md`:
 
-1. Sostituisci `## [Unreleased]` con `## [0.8.2] - YYYY-MM-DD`
+1. Sostituisci `## [Unreleased]` con `## [0.8.4] - YYYY-MM-DD`
 2. Mantieni le voci sotto (Added/Changed/Fixed)
 
 ```markdown
-## [0.8.2] - 2026-02-09
+## [0.8.4] - 2026-02-09
 
-### Changed
-- Rilevamento FFmpeg migliorato: percorsi Chocolatey, Scoop, Winget; fallback PATH utente da registro Windows
+### Added
+- Selezione qualità video: 720p, 1080p, 4K; UI a due livelli (Tipo + Qualità/Formato)
 
-## [0.8.1] - 2026-02-09
+## [0.8.3] - 2026-02-09
 ...
 ```
 
@@ -91,15 +91,15 @@ In `CHANGELOG.md`:
 
 ```powershell
 git add -A
-git commit -m "release: v0.8.2"
+git commit -m "release: v0.8.4"
 git push origin main
 ```
 
 ### Passo 5 — Tag e push (avvia build)
 
 ```powershell
-git tag v0.8.2
-git push origin v0.8.2
+git tag v0.8.4
+git push origin v0.8.4
 ```
 
 Il push del tag attiva il workflow: build Windows (.exe) e macOS (.zip), crea la Release su GitHub e carica gli asset.
@@ -107,7 +107,7 @@ Il push del tag attiva il workflow: build Windows (.exe) e macOS (.zip), crea la
 ### Passo 6 — Verifica Release
 
 - Vai su GitHub → Releases
-- Controlla che siano presenti `DownConv-v0.8.2-win64.exe` e `DownConv-v0.8.2-macos.zip`
+- Controlla che siano presenti `DownConv-v0.8.4-win64.exe` e `DownConv-v0.8.4-macos.zip`
 - Eventualmente modifica le note di rilascio (generate automaticamente da `generate_release_notes`)
 
 ---

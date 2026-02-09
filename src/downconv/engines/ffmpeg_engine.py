@@ -1,5 +1,6 @@
 """Engine FFmpeg per conversione audio."""
 
+import errno
 import logging
 import os
 import re
@@ -12,6 +13,7 @@ from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
+from ..utils.disk_check import MSG_DISK_FULL, is_disk_full_error
 from ..utils.ffmpeg_provider import get_ffmpeg_path, get_ffprobe_path
 
 logger = logging.getLogger(__name__)
@@ -116,7 +118,14 @@ def _run_convert_with_progress(
             output_path.unlink(missing_ok=True)
         return False, _parse_ffmpeg_error(stderr_text)
     if output_path != final_output:
-        os.replace(output_path, final_output)
+        try:
+            os.replace(output_path, final_output)
+        except OSError as e:
+            if e.errno == errno.ENOSPC:
+                if output_path.exists():
+                    output_path.unlink(missing_ok=True)
+                return False, MSG_DISK_FULL
+            raise
     progress_callback(100.0)
     return True, ""
 
@@ -125,6 +134,9 @@ def _parse_ffmpeg_error(stderr: str) -> str:
     """Estrae messaggio errore da stderr FFmpeg."""
     if not stderr:
         return "Errore FFmpeg"
+    stderr_lower = stderr.lower()
+    if "no space" in stderr_lower or "disk full" in stderr_lower or "enospc" in stderr_lower:
+        return MSG_DISK_FULL
     keywords = ["error", "invalid", "no such file", "permission denied"]
     for line in stderr.splitlines():
         lower = line.lower()
@@ -184,21 +196,8 @@ class FfmpegEngine:
             cmd.extend(["-c:a", "flac"])
         elif fmt in ("m4a", "alac"):
             cmd.extend(["-c:a", "alac", "-movflags", "use_metadata_tags"])
-        elif fmt == "ogg":
-            cmd.extend(["-c:a", "libvorbis"])
-            # Vorbis: -q:a 0-10 (~45-500k). Mappiamo: lossless→9, 320k→10, 192k→8, 128k→6
-            q_map = {"lossless": "9", "320k": "10", "192k": "8", "128k": "6"}
-            cmd.extend(["-q:a", q_map.get(quality, "8")])
         elif fmt == "wav":
             cmd.extend(["-c:a", "pcm_s16le"])
-        elif fmt == "opus":
-            cmd.extend(["-c:a", "libopus"])
-            # Opus: -b:a bitrate. Mappiamo quality come MP3
-            if quality in ("lossless", "320k"):
-                br = "320k"
-            else:
-                br = quality if quality.endswith("k") else "192k"
-            cmd.extend(["-b:a", br])
         else:
             cmd.extend(["-c:a", "copy"])
 
@@ -213,14 +212,8 @@ class FfmpegEngine:
         elif fmt in ("m4a", "alac") and not out_str.lower().endswith((".m4a", ".alac")):
             output_path = output_path.with_suffix(".m4a")
             out_str = str(output_path)
-        elif fmt == "ogg" and not out_str.lower().endswith(".ogg"):
-            output_path = output_path.with_suffix(".ogg")
-            out_str = str(output_path)
         elif fmt == "wav" and not out_str.lower().endswith(".wav"):
             output_path = output_path.with_suffix(".wav")
-            out_str = str(output_path)
-        elif fmt == "opus" and not out_str.lower().endswith(".opus"):
-            output_path = output_path.with_suffix(".opus")
             out_str = str(output_path)
         cmd.append(out_str)
 
@@ -268,7 +261,14 @@ class FfmpegEngine:
                 msg = _parse_ffmpeg_error(result.stderr)
                 return False, msg
             if output_path != final_output:
-                os.replace(output_path, final_output)
+                try:
+                    os.replace(output_path, final_output)
+                except OSError as e:
+                    if e.errno == errno.ENOSPC:
+                        if output_path.exists():
+                            output_path.unlink(missing_ok=True)
+                        return False, MSG_DISK_FULL
+                    raise
             return True, ""
         except subprocess.TimeoutExpired:
             if output_path != final_output and output_path.exists():
@@ -287,9 +287,18 @@ class FfmpegEngine:
                 output_path.unlink(missing_ok=True)
             msg = _parse_ffmpeg_error(e.stderr if hasattr(e, "stderr") else "")
             return False, msg or str(e)
+        except OSError as e:
+            if output_path != final_output and output_path.exists():
+                output_path.unlink(missing_ok=True)
+            if e.errno == errno.ENOSPC:
+                return False, MSG_DISK_FULL
+            logger.exception("Conversione fallita: %s", e)
+            return False, str(e)
         except Exception as e:
             if output_path != final_output and output_path.exists():
                 output_path.unlink(missing_ok=True)
+            if is_disk_full_error(e):
+                return False, MSG_DISK_FULL
             logger.exception("Conversione fallita: %s", e)
             return False, str(e)
 

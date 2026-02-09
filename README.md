@@ -5,7 +5,7 @@
 
 Applicazione desktop professionale per **download video/audio da URL** (YouTube, SoundCloud, Vimeo, ecc.) e **conversione audio batch**.
 
-- **Download:** yt-dlp, risoluzioni massime
+- **Download:** yt-dlp, qualità video Ottimale/1080p/720p/4K, formati audio Ottimale/FLAC/WAV/M4A/MP3/Nativo (Ottimale=config migliore per sorgente)
 - **Conversione:** FFmpeg, preservazione metadati, lossless, multithread
 
 ## Download (utenti finali)

@@ -44,7 +44,7 @@ def load_env():
 
 ### Convenzioni
 ```
-feature/download-subtitles
+feature/system-tray
 fix/progress-bar-crash
 refactor/ffmpeg-engine
 ```
@@ -58,7 +58,7 @@ refactor/ffmpeg-engine
 
 ### Commit Messages
 ```
-feat: aggiungi download sottotitoli
+feat: aggiungi system tray
 fix: progress bar non aggiornata su playlist
 refactor: estrai YtdlpEngine in modulo separato
 docs: aggiorna ARCHITECTURE
@@ -155,7 +155,7 @@ Documento vivente con stato progetto:
 
 ## Backlog
 - [ ] System tray
-- [ ] Sottotitoli
+- [ ] Download multipli in coda
 ```
 
 ### Riferimento
