@@ -29,7 +29,9 @@ Write-Host "Build in corso (2-5 min)..."
 $addData = @("--add-data", "src/downconv/resources;downconv/resources")
 $addData += "--add-data"
 $addData += "bundle/ffmpeg;ffmpeg"
-& .venv\Scripts\pyinstaller.exe --onefile --windowed --name DownConv --paths=src `
+$iconPath = "src/downconv/resources/icon.ico"
+if (-not (Test-Path $iconPath)) { python scripts/generate_icon.py }
+& .venv\Scripts\pyinstaller.exe --onefile --windowed --name DownConv --paths=src --icon=$iconPath `
     --hidden-import=PySide6.QtCore --hidden-import=PySide6.QtGui --hidden-import=PySide6.QtWidgets `
     --hidden-import=yt_dlp `
     @addData `

@@ -4,6 +4,11 @@ Tutti i cambiamenti notevoli sono documentati qui. Formato [Keep a Changelog](ht
 
 ## [Unreleased]
 
+## [0.8.3] - 2026-02-09
+
+### Added
+- Icona .exe in Explorer: `--icon` PyInstaller (icon.ico) allineata a finestra/taskbar
+
 ## [0.8.2] - 2026-02-09
 
 ### Changed
