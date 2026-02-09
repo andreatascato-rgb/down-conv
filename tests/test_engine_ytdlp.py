@@ -7,7 +7,7 @@ from unittest.mock import MagicMock, patch
 from downconv.engines.ytdlp_engine import YtdlpEngine, is_url_supported
 
 
-@patch("downconv.engines.ytdlp_engine.YoutubeDL")
+@patch("yt_dlp.YoutubeDL")
 def test_download_success(mock_ydl_class: MagicMock) -> None:
     """Download con mock ritorna success senza eccezioni."""
     mock_instance = MagicMock()
@@ -27,7 +27,7 @@ def test_download_success(mock_ydl_class: MagicMock) -> None:
     assert "youtube.com" in call_args[0]
 
 
-@patch("downconv.engines.ytdlp_engine.YoutubeDL")
+@patch("yt_dlp.YoutubeDL")
 def test_download_failure_extractor_error(mock_ydl_class: MagicMock) -> None:
     """Download con eccezione ExtractorError ritorna messaggio utente."""
     from yt_dlp.utils import ExtractorError
@@ -43,7 +43,7 @@ def test_download_failure_extractor_error(mock_ydl_class: MagicMock) -> None:
     assert "Impossibile estrarre" in msg or "Verifica l'URL" in msg
 
 
-@patch("downconv.engines.ytdlp_engine.YoutubeDL")
+@patch("yt_dlp.YoutubeDL")
 def test_download_failure_http_error(mock_ydl_class: MagicMock) -> None:
     """Download con HTTPError ritorna messaggio rete."""
     from urllib.error import HTTPError
@@ -61,7 +61,7 @@ def test_download_failure_http_error(mock_ydl_class: MagicMock) -> None:
     assert "rete" in msg.lower() or "Riprova" in msg
 
 
-@patch("downconv.engines.ytdlp_engine.YoutubeDL")
+@patch("yt_dlp.YoutubeDL")
 def test_download_enospc_returns_disk_full_message(mock_ydl_class: MagicMock) -> None:
     """Download con ENOSPC ritorna messaggio spazio disco."""
     import errno
