@@ -9,7 +9,8 @@ Tutti i cambiamenti notevoli sono documentati qui. Formato [Keep a Changelog](ht
 ## [1.0.5] - 2026-02-10
 
 ### Added
-- Versione nella barra del titolo della finestra principale (es. "Down&Conv 1.0.5")
+- Versione in titolo finestra (es. "Down&Conv 1.0.5")
+- Versione in tab Aiuto prima della sezione Aggiornamenti
 
 ## [1.0.4] - 2026-02-10
 

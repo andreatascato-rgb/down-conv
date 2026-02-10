@@ -12,15 +12,15 @@
 
 ## Pronto per commit / push / release
 
-- [x] Release 1.0.5: versione nel titolo finestra
-- [x] Documentazione allineata: CHANGELOG [1.0.4], STATUS, version in __init__ e pyproject
+- [x] Release 1.0.5: versione in titolo finestra e tab Aiuto
+- [x] Documentazione allineata: CHANGELOG [1.0.5], STATUS, version in __init__ e pyproject
 - [x] `.\scripts\check.ps1` (ruff + pytest) passano
 
 ---
 
 ## Done
 
-- [x] **Release 1.0.5:** Versione nel titolo finestra principale
+- [x] **Release 1.0.5:** Versione in titolo finestra e in tab Aiuto
 - [x] **Release 1.0.4:** Fix ruff lint (E501, I001), fix test ytdlp patch target (yt_dlp.YoutubeDL)
 - [x] **Release 1.0.3:** Evidenza aggiornamento — tab Aiuto "Aiuto ●" colore amber, messaggio all'avvio se nuova versione disponibile
 - [x] **Release 1.0.2:** Avvio più rapido — preload in background (yt-dlp + tab), lazy import engine, cursori dopo show

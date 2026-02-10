@@ -13,6 +13,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from ... import __version__
 from ...utils.paths import get_log_dir
 from ...utils.report_bug import get_report_bug_url
 from ...utils.update_check import UpdateCheckWorker, UpdateResult
@@ -34,6 +35,9 @@ class AiutoTab(QWidget):
         layout.setSpacing(12)
         layout.setContentsMargins(16, 16, 16, 16)
 
+        version_label = QLabel(f"Down&Conv versione {__version__}")
+        version_label.setObjectName("secondaryText")
+        layout.addWidget(version_label)
         layout.addWidget(self._build_updates_section())
         layout.addWidget(self._build_support_section())
         layout.addStretch()
