@@ -8,6 +8,7 @@ from PySide6.QtCore import QThread, QTimer
 from PySide6.QtGui import QColor, QIcon
 from PySide6.QtWidgets import QMainWindow, QMessageBox, QTabWidget, QVBoxLayout, QWidget
 
+from .. import __version__
 from ..utils.paths import get_app_icon_path
 from ..utils.update_check import UpdateCheckWorker, UpdateResult
 from .tabs.aiuto_tab import AiutoTab
@@ -39,7 +40,7 @@ class MainWindow(QMainWindow):
 
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
-        self.setWindowTitle("Down&Conv")
+        self.setWindowTitle(f"Down&Conv {__version__}")
         icon_path = get_app_icon_path()
         if icon_path.exists():
             self.setWindowIcon(QIcon(str(icon_path)))
